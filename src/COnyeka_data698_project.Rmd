@@ -1,0 +1,57 @@
+---
+title: "DATA698 Project - Vehicle Loan Default Prediction"
+author: "Chinedu Onyeka"
+date: "12/03/2023"
+output:
+  html_document:
+    includes:
+      in_header: header.html
+    css: ./lab.css
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_float: true
+    code_folding: "hide"
+  pdf_document: default
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#library(tidyverse)
+```
+
+
+<center> <h2> 1. INTRODUCTION </h2> </center> 
+<h3> 1.1 Research Problem </h3> 
+<h3> 1.2 Abstract </h3> 
+<center> <h2> 2. LITERATURE REVIEW </h2> </center> 
+
+<center> <h2> 3. METHODOLOGY </h2> </center> 
+<h3> 3.1 DATASET </h3> 
+<h3> 3.2 Data Pre-processing </h3> 
+<h4> 3.2.1 Data Cleaning </h4> </center> 
+<h4> 3.2.2 Feature Selection and pre-processing </h4>
+
+<center> <h2> 4. INTRODUCTION TO MODELS </h2> </center> 
+<h3> 4.1 Predictive Analytics Overview </h3>
+<h3> 4.2 Scoring the Model and understanding the scoring metrics </h3>
+<h3> 4.3 Logistic Regression </h3>
+<h3> 4.4 Tree-Based Methods </h3> 
+<h4> 4.4.1 Random Forest </h4> 
+<h4> 4.4.2 Gradient Boosting </h4>
+
+<center> <h2> 5. ANALYSIS, TESTING AND RESULTS </h2> </center> 
+<h3> 5.1 Analysis </h3>
+<h3> 5.2 Testing </h3>
+<h3> 5.3 Results </h3>
+
+<center> <h2> 6. CONCLUSION </h2> </center> 
+
+
+
