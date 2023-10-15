@@ -37,24 +37,28 @@ The auto-loan industry is a multi-billion dollar industry that affects almost al
 Banks do not want to issue loans to individuals that would default and at the same time do not want to deny loans for individuals that would not default. To do this, they want to be able to predict to a high level of confidence whether to approve or deny an auto-loan so that they will be able to minimize losses and writeoffs when a borrower is not able to make payments and at the same time make profits from customers who are able to service their loans. This project aims to develop a model using machine learning techniques to help banks decide which potential borrower is likely to default on their loans or not.  
 </br>
 <h3> 1.2 Definition of Terms </h3>  
-**Automobile: ** According to Britannica, "Automobile, byname auto, also called motorcar or car, a usually four-wheeled vehicle designed primarily for passenger transportation and commonly propelled by an internal-combustion engine using a volatile fuel." Automobiles could also be referred to as a vehicle, motor vehicle, light trucks, etc. These days, automobiles can be propelled by either an internal-combustion engine or by electric battery. About 282 million vehicles were registered in the United States in 2021 about 90 million more compared to about 193 million in 1990 (SRD, 2023). Also, the average price of motor vehicles in the United States in 2022 is about $46,000 USD (SRD, 2023).  
-**Auto Loan: ** An auto loan is the money you borrow to pay for your car. You will have to repay the loan and interest in fixed installments (Allison, 2023). Auto Loans are also referred to as car loan, vehicle loan, car financing, etc. These loans are often secured loans meaning that the car is used as the collateral to secure the loan. Typically, consumers borrow money to buy vehicles. In fact, consumers owed about 1.41 trillion US dollars on vehicles they drove in 2022. Also, the average auto loan balance is about $22,000 USD. In addition, about 80% of all new vehicles on the road is financed through a loan or lease (Chris, 2023). This goes to tell us that the auto-loan industry is a multi-trillion dollar industry.  
+**Automobile: ** Automobile, byname auto, also called motorcar or car, a usually four-wheeled vehicle designed primarily for passenger transportation and commonly propelled by an internal-combustion engine using a volatile fuel (Cromer et al., 2023). Automobiles could also be referred to as a vehicle, motor vehicle, light trucks, etc. These days, automobiles can be propelled by either an internal-combustion engine or by electric battery. About 282 million vehicles were registered in the United States in 2021 about 90 million more compared to about 193 million in 1990. (U.S. Vehicle Fleet 1990-2021 | Statista, 2023). Also, the average price of motor vehicles in the United States in 2022 is about $46,000 USD  (U.S.: Average Selling Price of New Vehicles 2022 | Statista, 2023)  
+**Auto Loan: ** An auto loan is the money you borrow to pay for your car. You will have to repay the loan and interest in fixed installments (Martin, 2023). Auto Loans are also referred to as car loan, vehicle loan, car financing, etc. These loans are often secured loans meaning that the car is used as the collateral to secure the loan. Typically, consumers borrow money to buy vehicles. In fact, consumers owed about 1.41 trillion US dollars on vehicles they drove in 2022. Also, the average auto loan balance is about $22,000 USD. In addition, about 80% of all new vehicles on the road is financed through a loan or lease (Chris, 2023). This goes to tell us that the auto-loan industry is a multi-trillion dollar industry.  
 **Vehicle Loan Default: ** Loan default refers to when a borrower fails to make their installment payments as agreed by the loan terms. Usually for secured loans, the lender (bank in this case) can repossess the asset (car) which is used as collateral for the loan. Banks usually do not want to do that but sometimes are forced to do that if the borrower defaults and does not make an arrangement with the lender. When a lender repossess the car, the value of the car at the time of repossession may not be up to the loan balance and the lender will have no option than to write off that balance as a loss. In the US, default rates for auto loans are on the rise and currently sits at about 2%. The benefits of being able to predict whether a borrower will default cannot be over emphasized as it will not only help lenders to know whether to approve or deny a loan application, it will also help them price the interest rate for lenders appropriately.  
-The problem of loan default is in all ramifications very probabilistic and it's often also considered strongly in credit risk modeling/credit scoring. Hence, lenders use a vast amount of credit risk tool to determine whether a borrower is likely to default or not.
+The problem of loan default is in all ramifications very probabilistic and it's often also considered strongly in credit risk modeling/credit scoring. Hence, lenders use a vast amount of credit risk tool to determine whether a borrower is likely to default or not. Entering default — when your lender determines you are not going to pay, usually some time after 90 days of no payments — can translate into your car being repossessed (O’Brien, 2023).
+
 
 * * *
 <center> <h2> 2. LITERATURE REVIEW </h2> </center>  
 The probability of loan default is a well researched topic especially because the industry is a multi-trillion dollar industry. This area is of significant economic importance and often also regarded as credit risk modeling or credit scoring. We review literature related to credit in general and then those related to auto-loan.  
 
-In Crook et. al, Credit scoring is concerned with developing empirical models to support decision making in the retail credit business. Also, a credit score is a model-based estimate of the probability that a borrower will show some undesirable behavior in the future. In application scoring, for example, lenders employ predictive models, called scorecards, to estimate how likely an applicant is to default. Such PD (probability of default) scorecards are routinely developed using classification algorithms (e.g., Hand & Henley, 1997).  
+In Crook et. al.(2007), Credit scoring is concerned with developing empirical models to support decision making in the retail credit business. Also, a credit score is a model-based estimate of the probability that a borrower will show some undesirable behavior in the future. In application scoring, for example, lenders employ predictive models, called scorecards, to estimate how likely an applicant is to default. Such PD (probability of default) scorecards are routinely developed using classification algorithms (e.g., Hand & Henley, 1997).  
 
-Whilst the extension of credit goes back to Babylonian times (Lewis, 1992) the history of credit scoring began in 1941 with the publication by Durand (1941) of a study that distinguished between good and bad loans made by 37 firms. Since then the already established techniques of statistical discrimination have been developed and an enormous number of new classification algorithms have been researched and tested. Virtually all major banks use credit scoring with specialised consultancies providing credit scoring services and offering powerful software to score applicants, monitor their performance and manage their accounts. 
+Whilst the extension of credit goes back to Babylonian times, the history of credit scoring began in 1941 with the publication by Durand of a study that distinguished between good and bad loans made by 37 firms (Crook et al. 2007). Since then the already established techniques of statistical discrimination have been developed and an enormous number of new classification algorithms have been researched and tested. Virtually all major banks use credit scoring with specialized consultancies providing credit scoring services and offering powerful software to score applicants, monitor their performance and manage their accounts.  
 
-Crook et. al (2007) conducted a research on credit risk scoring and found that the commonest method of estimating a classifier of applicants into those likely to repay and those unlikely to repay is logistic regression with the logit value compared with a cut off. Basically, this research makes claim that the industry standard for predicting loan default is the logistic regression model.  
+Altman and Saunders (1998) published an overview of credit risk modelling for the last 20 years. They found that credit risk modelling has evolved drastically for the past 20 years due to new emerging statistical techniques(Altman & Saunders, 1998). Later, another group of researchers published an extension to Altman and Saunders work presenting a further
+development of credit risk modelling(Hao, Alam, & Carling, 2010). Their work identified more than 1000 articles on this topic, and found that logistic regression (LR) model and discriminant analysis are the most widely used methods for constructing scoring systems.
 
-Lessmann et. al (2015) compared about 41 classifiers based on six performance measures across eight real-world credit scoring data sets from the UK, Europe, and Australia. They investigated the overall model performance using several datasets, and examine the predicting performance in each case. The conclusion from this research suggests that several classifiers predict risk significantly better than the industry standard of Logistic Regression (LR). It went further to recommend the Random Forests(RF) model as a benchmark model because of its effectiveness, precision, and its interpretability.  
+Also, Crook et al.(2007) conducted a research on credit risk scoring and found that the commonest method of estimating a classifier of applicants into those likely to repay and those unlikely to repay is logistic regression with the logit value compared with a cut off. Basically, this research makes claim that the industry standard for predicting loan default is the logistic regression model.  
 
-Agrawal et al (2014) studied the impact of contract-specific variables as predictors in commercial vehicle loans. In their research, applying a logistic regression model for predicting default, around 11 out of 17 contract-specific variables where identified to provide additional assistance for the credit lending institution(Agrawal, Agrawal, & Raizada, 2014). The authors also suggest that contract information could improve the accuracy in more advanced nonlinear models. Specifically, the authors suggest the use of Neural Networks as one potential predictive model to improve the performance based on contract information(Agrawal et al.,2014).  
+Lessmann et al.(2015) compared about 41 classifiers based on six performance measures across eight real-world credit scoring data sets from the UK, Europe, and Australia. They investigated the overall model performance using several datasets, and examine the predicting performance in each case. The conclusion from this research suggests that several classifiers predict risk significantly better than the industry standard of Logistic Regression (LR). It went further to recommend the Random Forests(RF) model as a benchmark model because of its effectiveness, precision, and its interpretability.  
+
+Agrawal et al.(2014) studied the impact of contract-specific variables as predictors in commercial vehicle loans. In their research, applying a logistic regression model for predicting default, around 11 out of 17 contract-specific variables where identified to provide additional assistance for the credit lending institution(Agrawal, Agrawal, & Raizada, 2014). The authors also suggest that contract information could improve the accuracy in more advanced nonlinear models. Specifically, the authors suggest the use of Neural Networks as one potential predictive model to improve the performance based on contract information(Agrawal et al.,2014).  
 
 Keeping the outcome of the above literature in mind, this project aims to contribute to the field of vehicle loan prediction by developing machine learning models that will be able to predict vehicle loan default based on the available data, and  also compare  three (3) models: Random Forest, XGBoost, and SVM models to the industry standard Logistic Regression model. The data set used in this project contains more data than those used in most of the literature reviewed above. Statistically, more data provides better results and we hope that will be useful in better comparing the model and decide which model provides the best prediction metrics. In this work, we explain the data used, the pre-processing and feature selection involved and also provide a quick overview of predictive analytics as well as quick review to help understand the scoring metrics for classification problems. In addition, each of the models used are briefly explained and then the analysis of the data followed by modeling/testing and then conclusion on the findings.
 
@@ -69,7 +73,7 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 
 <center> <h2> 4. INTRODUCTION TO MODELS </h2> </center> 
 <h3> 4.1 Predictive Analytics Overview </h3>
-<h3> 4.2 Scoring the Model and understanding the scoring metrics </h3>
+<h3> 4.2 Scoring the Model and Understanding the Scoring Metrics </h3>
 <h3> 4.3 Logistic Regression </h3>
 <h3> 4.4 Tree-Based Methods </h3> 
 <h4> 4.4.1 Random Forest </h4> 
@@ -86,7 +90,37 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 <center> <h2> 6. CONCLUSION </h2> </center> 
 
 <center> <h2> 7. REFERENCES </h2> </center>  
+Agarwal, S., Ambrose, B. W., & Chomsisengphet, S. (2008). Determinants of automobile loan default and prepayment. Economic Perspectives - Federal Reserve Bank of Chicago.  
+
+Altman, E. I., & Saunders, A. (1998). Credit risk measurement: Developments over the last
+20 years. Journal of Banking and Finance, 21(11-12), 1728–1742.
+
+Agrawal, A., Agrawal, M., & Raizada, D. A. (2014). Predicting defaults in commercial vehicle
+loans using logistic regression: Case of an indian nbfc. International Journal of Research in Commerce and Management, 5, 22–28.  
+
+Crook, J. N., Edelman, D. B., & Thomas, L. C. (2007). Recent developments in consumer credit risk assessment. European Journal of Operational Research, 183, 447–1465.  
+
+Cromer, O. C., Purdy, K. W., Cromer, G. C., & Foster, C. G. (2023, October 13). Automobile | Definition, History, industry, design, & Facts. Encyclopedia Britannica. https://www.britannica.com/technology/automobile  
+
+Hand, D.J. and Henley, W.E. (1997) Statistical Classification Methods in Consumer Credit Scoring: A Review. Journal of Royal Statistical Society, 160, 523-541.  
+
+Hao, C., Alam, M. M., & Carling, K. (2010). Review of the literature on credit risk modeling: Development of the past 10 years. Banks and Bank Systems, 5 (3).
+
 Lessmann, S., Baesens, B., Seow, H.-V., & Thomas, L. C. (2015). Benchmarking state-of-the-art classification algorithms for credit scoring: An update of research. European Journal of Operational Research, 247 (1), 124–136.  
+
+Martin, A. (2023). What is an auto loan? Bankrate. https://www.bankrate.com/loans/auto-loans/what-is-an-auto-loan/  
+
+O’Brien, S. (2023, February 4). Auto loan delinquencies are rising. Here’s what to do if you’re struggling with payments. CNBC. https://www.cnbc.com/2023/02/04/auto-loan-delinquencies-rise-what-to-do-if-you-struggle-with-payments.html  
+
+Probasco, J. (2023). Expert explanation of how auto loans work. Investopedia. https://www.investopedia.com/how-car-loans-work-5202265  
+
+U.S. vehicle fleet 1990-2021 | Statista. (2023, August 24). Statista. https://www.statista.com/statistics/183505/number-of-vehicles-in-the-united-states-since-1990/  
+
+U.S.: average selling price of new vehicles 2022 | Statista. (2023, June 7). Statista. https://www.statista.com/statistics/274927/new-vehicle-average-selling-price-in-the-united-states/  
+
+Witkowski, R. (2023, June 2). For People Under 30, Car Loan Delinquencies Hit A 15-Year High. Is The Economy Running Out Of Gas? Forbes Advisor. https://www.forbes.com/advisor/auto-loans/car-loan-late-payments/  
+
+
 
 
 
