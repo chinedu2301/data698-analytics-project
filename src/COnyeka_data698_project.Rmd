@@ -41,7 +41,7 @@ Banks do not want to issue loans to individuals that would default and at the sa
 **Auto Loan: ** An auto loan is the money you borrow to pay for your car. You will have to repay the loan and interest in fixed installments (Martin, 2023). Auto Loans are also referred to as car loan, vehicle loan, car financing, etc. These loans are often secured loans meaning that the car is used as the collateral to secure the loan. Typically, consumers borrow money to buy vehicles. In fact, consumers owed about 1.41 trillion US dollars on vehicles they drove in 2022. Also, the average auto loan balance is about $22,000 USD. In addition, about 80% of all new vehicles on the road is financed through a loan or lease (Chris, 2023). This goes to tell us that the auto-loan industry is a multi-trillion dollar industry.  
 **Vehicle Loan Default: ** Loan default refers to when a borrower fails to make their installment payments as agreed by the loan terms. Usually for secured loans, the lender (bank in this case) can repossess the asset (car) which is used as collateral for the loan. Banks usually do not want to do that but sometimes are forced to do that if the borrower defaults and does not make an arrangement with the lender. When a lender repossess the car, the value of the car at the time of repossession may not be up to the loan balance and the lender will have no option than to write off that balance as a loss. In the US, default rates for auto loans are on the rise and currently sits at about 2%. The benefits of being able to predict whether a borrower will default cannot be over emphasized as it will not only help lenders to know whether to approve or deny a loan application, it will also help them price the interest rate for lenders appropriately.  
 The problem of loan default is in all ramifications very probabilistic and it's often also considered strongly in credit risk modeling/credit scoring. Hence, lenders use a vast amount of credit risk tool to determine whether a borrower is likely to default or not. Entering default — when your lender determines you are not going to pay, usually some time after 90 days of no payments — can translate into your car being repossessed (O’Brien, 2023).
-
+</br>
 
 * * *
 <center> <h2> 2. LITERATURE REVIEW </h2> </center>  
@@ -61,6 +61,7 @@ Lessmann et al.(2015) compared about 41 classifiers based on six performance mea
 Agrawal et al.(2014) studied the impact of contract-specific variables as predictors in commercial vehicle loans. In their research, applying a logistic regression model for predicting default, around 11 out of 17 contract-specific variables where identified to provide additional assistance for the credit lending institution(Agrawal, Agrawal, & Raizada, 2014). The authors also suggest that contract information could improve the accuracy in more advanced nonlinear models. Specifically, the authors suggest the use of Neural Networks as one potential predictive model to improve the performance based on contract information(Agrawal et al.,2014).  
 
 Keeping the outcome of the above literature in mind, this project aims to contribute to the field of vehicle loan prediction by developing machine learning models that will be able to predict vehicle loan default based on the available data, and  also compare  three (3) models: Random Forest, XGBoost, and SVM models to the industry standard Logistic Regression model. The data set used in this project contains more data than those used in most of the literature reviewed above. Statistically, more data provides better results and we hope that will be useful in better comparing the model and decide which model provides the best prediction metrics. In this work, we explain the data used, the pre-processing and feature selection involved and also provide a quick overview of predictive analytics as well as quick review to help understand the scoring metrics for classification problems. In addition, each of the models used are briefly explained and then the analysis of the data followed by modeling/testing and then conclusion on the findings.
+</br>
 
 * * *
 
@@ -70,16 +71,85 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 <h3> 3.2 Data Pre-processing </h3> 
 <h4> 3.2.1 Data Cleaning </h4> </center> 
 <h4> 3.2.2 Feature Selection and pre-processing </h4>
+</b>
 
+* * *
 <center> <h2> 4. INTRODUCTION TO MODELS </h2> </center> 
 <h3> 4.1 Predictive Analytics Overview </h3>
-<h3> 4.2 Scoring the Model and Understanding the Scoring Metrics </h3>
-<h3> 4.3 Logistic Regression </h3>
-<h3> 4.4 Tree-Based Methods </h3> 
-<h4> 4.4.1 Random Forest </h4> 
-<h4> 4.4.2 Gradient Boosting </h4>
-<h3> 4.5 Support Vector Machines </h3>
 
+
+<h3> 4.2 Logistic Regression </h3>  
+Logistic Regression is a type of classification algorithm that is used when the response variable is binary in nature. Being binary means that the response variable is a two level categorical variable. The Logistic Regression model belongs to the family of generalized linear models (GLMs) and it's used when the response is a two-level categorical variable. Typical examples of binary response variables are Yes/No; Male/Female; Cancer/No Cancer; Approve/Deny, etc. These response variables are often coded as 1 or 0. Even though the name contains regression, the logistic regression model is often used when the response variable is discrete. i.e It is a classification algorithm.  
+Logistic Regressions must not necessarily be binary as there are possible situations where there are more than two-level categories in the response variables and such situations are regarded as multinomial logistic regression which is beyond the scope of this article.  
+The logistic regression model relates the probability that a response variable would be successful to the predictors $x_{1, i}, x_{2, i}, ..., x_{k, i}$ through a framework like that of multiple regression:  
+$logit(p_{i}) = log_{e}(\frac{p_{i}}{1-p_{i}}) = \beta_{0} + \beta_{1}x_{1,i} + \beta_{2}x_{2,i} + ... + \beta_{k}x_{k,i}$
+
+<center> <b>Assumptions for Logistic Regression</b> </center>  
+<li> Each outcome of the response variable is independent of the other outcomes. </li> 
+<li> The response variable must follow a binomial distribution. </li> 
+<li> Each predictor $x_{i}$ is linearly related to the $logit(p_{i})$ if other predictors are held constant. </li>  
+
+</br>
+<h3> 4.3 Tree-Based Methods </h3> 
+<h4> 4.3.1 Random Forest </h4> 
+<h4> 4.3.2 Gradient Boosting </h4>
+<h3> 4.4 Support Vector Machines </h3>  
+
+
+<h3> 4.5 Scoring the Model and Understanding the Scoring Metrics </h3>  
+After obtaining and fitting a classification model, we need certain metrics to evaluate how well the model performs.Below are some metrics that can be used to evaluate the performance of a classification model:  
+<center>
+<img src="https://github.com/chinedu2301/data621-business-analytics-data-mining/blob/main/blogs/confusion-matrix.png?raw=true" />  
+source: https://www.debadityachakravorty.com/ai-ml/cmatrix/
+</center>  
+<br>
+The type of metrics to be used depends on the situation.
+<li> **Accuracy: **  This is the most common measure used to evaluate a classification model. Accuracy is the ratio of correctly classified observations to the total. This tells us the percentage of observations that our model is correctly classifying.   
+$accuracy = \frac{TP + TN}{TP+FP+TN+FN}$  
+Accuracy is great for symmetric datasets and when the cost of false positives and false negatives are similar.</li>  
+<li> **Precision: ** This is the percentage of the results that are relevant. It is computed by calculating the number of true positives (TP) divided by all positively classified observations by the model (both TP and FP). The precision tells us the percentage of observations that are actually positive from all positively classified observations by the model. i.e a precision of 90% means that of all the observations that are classified as positive by our model, only 90% of those are actually positive which means that the model correctly classified the positive cases in 90% of the cases.  
+$precision = \frac{TP}{TP+FP}$  
+We use precision when we want to be more confident about our true positives. For example, in spam/ham emails, you want to be sure that the email is spam before putting it in the spam box. </li> 
+<li> **Recall (Sensitivity): ** The recall is also regarded as the sensitivity of the model. This refers to the percentage of total relevant results that are correctly classified by the model. Essentially, it means the ratio of the number of positively classified observations to the total number of actual positives both those correctly classified and incorrectly classified by the model (TP and FN). It is computed by dividing the number of true positives by the total number of observations that are actually positive (whether correctly classified by the model or not). The Recall also known as Sensitivity tells us what proportion of the positive class got correctly classified. i.e What percentage of cancer patients got correctly classified as cancer patients by the model. A recall of 95% means that of all the actually positive cases, only 95% were correctly classified by the model.  
+$recall = \frac{TP}{TP+FN}$  
+We use recall when having a false positive is way better than having a false negative. for example, you want to tell someone that they have cancer (FP) which in fact they don't instead of telling them that they don't have cancer(FN) when infact they have it. It would be disastrous to give a False Negative to a cancer patient because they would probably have had time to ameliorate the situation if they had been informed earlier. The recall is better when the cost of false negatives is unacceptable. i.e. False positive is better than false negative.</li> 
+<li> **F1 Score: ** This is the harmonic mean of the precision and recall. It is also called F-score or F-Measure.  
+$F1 = \frac{2 * precision * recall}{precision + recall}$  
+F1 is best for uneven distribution and it can be used to compare different models.</li>  
+
+
+<h3> 4.6 Underfitting and Overfitting </h3>  
+In supervised machine learning problems, we aim to get a model that properly fits the training data and also generalizes well on new/test data. When the model is unable to generalize on new data, it is not able to perform its purpose. One of such causes could be as a result of underfitting or overffiting.  
+<li> **Undefitting: ** This is a situation in machine learning where a model does not properly fit the training data resulting in high training error and high test error. In this case, the model performs poorly on the training data as well as on new data.  An underfit machine learning model is not a suitable model for the data because it is not able to properly capture the relationship between the input examples (X) and the target values (Y).Poor performance on the training data could mean that the model is too simple to describe the target properly. A typical example of an underfit model is using a linear model for data points with quadratic relationship.  
+Since the model cannot generalize well on new data, it cannot be leveraged for prediction or classification tasks. High bias and low variance are good indicators of underfitting. </li>
+<li> **Overfitting: ** This is simply the opposite of underfitting. It is a situation in machine learning where a model properly fits the training data, but performs poorly on new datasets thereby resulting in low training error, but high test error. It involves good performance on training data, but poor performance on new/test data. The model is essentially learning the noise and details in the training data and memorizing it such that it can not generalize to unseen data. A typical example of overfitting is fitting a quadratic function with a cubic or higher order polynomial model. High variance and low bias are indicators of overfitting. </li>  
+<br>
+
+<center>
+<img src = "https://github.com/chinedu2301/data621-business-analytics-data-mining/blob/main/blogs/underfitting-overfitting-aws.png?raw=true" />
+source: https://docs.aws.amazon.com/machine-learning/latest/dg/model-fit-underfitting-vs-overfitting.html
+</center>
+<br>
+
+<center> <b> Reducing Underfitting  </b> </center>  
+There are different ways to decrease underfitting such are:
+<li>Increase model complexity. It could be that the selected model is too simple and a more complex model may be required.</li>
+<li>Perform feature selection/feature engineering. </li>
+<li>Increase the duration of training to get better results.</li>
+<li>Decrease the amount of regularization used.</li>
+
+<center> <b> Reducing Overfitting  </b> </center>  
+
+<li>Reduce the model complexity. It could be that the model is too complex and a simpler model is required.</li>
+<li>Increase the amount of training data</li>
+<li>Perform feature selection: Reduce the number of features</li>
+<li>Increase the amount of regularization</li>
+<li>Early stopping in the training</li>
+<li>Perform cross validation</li>
+<li>Use ensemble methods</li>  
+</br>  
+
+* * *  
 <center> <h2> 5. ANALYSIS, TESTING AND RESULTS </h2> </center> 
 <h3> 5.1 Analysis </h3>
 <h4> 5.1.1 Data Cleaning and Pre-processing </h4>
@@ -98,9 +168,18 @@ Altman, E. I., & Saunders, A. (1998). Credit risk measurement: Developments over
 Agrawal, A., Agrawal, M., & Raizada, D. A. (2014). Predicting defaults in commercial vehicle
 loans using logistic regression: Case of an indian nbfc. International Journal of Research in Commerce and Management, 5, 22–28.  
 
+Brownlee, J. (2019, August 12). Overfitting and Underfitting With Machine Learning Algorithms. Machine Learning Mastery. Retrieved November 4, 2023, from https://machinelearningmastery.com/overfitting-and-underfitting-with-machine-learning-algorithms/#:%7E:text=Overfitting%3A%20Good%20performance%20on%20the,poor%20generalization%20to%20other%20data
+
+
 Crook, J. N., Edelman, D. B., & Thomas, L. C. (2007). Recent developments in consumer credit risk assessment. European Journal of Operational Research, 183, 447–1465.  
 
 Cromer, O. C., Purdy, K. W., Cromer, G. C., & Foster, C. G. (2023, October 13). Automobile | Definition, History, industry, design, & Facts. Encyclopedia Britannica. https://www.britannica.com/technology/automobile  
+
+Diez, D., Barr, C. D., & Cetinkaya-Rundel, M. (2019). OpenIntro statistics 4th Edition.  
+
+Education, I. C. (2021, March 25). Underfitting. IBM Cloud Learn. Retrieved November 5, 2023, from https://www.ibm.com/cloud/learn/underfitting  
+
+GeeksforGeeks. (2021, October 20). ML | Underfitting and Overfitting. Retrieved November 4, 2023, from https://www.geeksforgeeks.org/underfitting-and-overfitting-in-machine-learning/  
 
 Hand, D.J. and Henley, W.E. (1997) Statistical Classification Methods in Consumer Credit Scoring: A Review. Journal of Royal Statistical Society, 160, 523-541.  
 
@@ -109,6 +188,8 @@ Hao, C., Alam, M. M., & Carling, K. (2010). Review of the literature on credit r
 Lessmann, S., Baesens, B., Seow, H.-V., & Thomas, L. C. (2015). Benchmarking state-of-the-art classification algorithms for credit scoring: An update of research. European Journal of Operational Research, 247 (1), 124–136.  
 
 Martin, A. (2023). What is an auto loan? Bankrate. https://www.bankrate.com/loans/auto-loans/what-is-an-auto-loan/  
+
+Model Fit: Underfitting vs. Overfitting - Amazon Machine Learning. (n.d.). Amazon Machine Learning Developer Guide. Retrieved November 4, 2023, from https://docs.aws.amazon.com/machine-learning/latest/dg/model-fit-underfitting-vs-overfitting.html
 
 O’Brien, S. (2023, February 4). Auto loan delinquencies are rising. Here’s what to do if you’re struggling with payments. CNBC. https://www.cnbc.com/2023/02/04/auto-loan-delinquencies-rise-what-to-do-if-you-struggle-with-payments.html  
 
