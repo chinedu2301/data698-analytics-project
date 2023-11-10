@@ -61,23 +61,11 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 
 * * *
 
-
-<center> <h2> 3. METHODOLOGY </h2> </center> 
-```{r}
-#library(tidyverse)
-```
-<h3> 3.1 DATASET </h3> 
-<h3> 3.2 Data Pre-processing </h3> 
-<h4> 3.2.1 Data Cleaning </h4> </center> 
-<h4> 3.2.2 Feature Selection and pre-processing </h4>
-</b>
-
-* * *
-<center> <h2> 4. OVERVIEW OF THE MODELS </h2> </center> 
-<h3> 4.1 Predictive Analytics Overview </h3>  
+<center> <h2> 3. OVERVIEW OF THE MODELS </h2> </center> 
+<h3> 3.1 Predictive Analytics Overview </h3>  
 Predictive analytics involves using historical data, statistical algorithms, and machine learning techniques to predict future outcomes. There are different types of algorithms for making predictions. Generally, we have regression models and classification models. Regression algorithms are mainly used when the variable to be predicted is a continuous value while classification algorithms are used to predict categories or classes.Classification algorithms are a fundamental part of predictive analytics and are used to categorize data into classes or groups based on specific features or attributes. Examples of classification algorithms include but not limited to Logistic Regression, Decision Trees, Random Forest, XGBoost, SVM, KNN, Naive Bayes, etc. The problem of vehicle loan default prediction is a classification problem and the classification algorithms that will be used to solve the problem of loan default in this project are briefly explained below:
 
-<h3> 4.2 Logistic Regression </h3>  
+<h3> 3.2 Logistic Regression </h3>  
 Logistic Regression is a type of classification algorithm that is used when the response variable is binary in nature. Being binary means that the response variable is a two level categorical variable. The Logistic Regression model belongs to the family of generalized linear models (GLMs) and it's used when the response is a two-level categorical variable. Typical examples of binary response variables are Yes/No; Male/Female; Cancer/No Cancer; Approve/Deny, etc. These response variables are often coded as 1 or 0. Even though the name contains regression, the logistic regression model is often used when the response variable is discrete. i.e It is a classification algorithm.  
 Logistic Regressions must not necessarily be binary as there are possible situations where there are more than two-level categories in the response variables and such situations are regarded as multinomial logistic regression which is beyond the scope of this article.  
 The logistic regression model relates the probability that a response variable would be successful to the predictors $x_{1, i}, x_{2, i}, ..., x_{k, i}$ through a framework like that of multiple regression:  
@@ -88,28 +76,27 @@ $logit(p_{i}) = log_{e}(\frac{p_{i}}{1-p_{i}}) = \beta_{0} + \beta_{1}x_{1,i} + 
 <li> The response variable must follow a binomial distribution. </li> 
 <li> Each predictor $x_{i}$ is linearly related to the $logit(p_{i})$ if other predictors are held constant. </li>  
 
-</br>
-<h3> 4.3 Tree-Based Methods </h3>  
+<h3> 3.3 Tree-Based Methods </h3>  
 Tree-based models are a type of supervised learning algorithm used for both classification and regression tasks. They construct a decision tree that recursively splits the data into subsets based on the most significant features. The tree structure consists of nodes representing the features, edges representing the decision rules, and leaves representing the output (class or value). The key advantage of tree-based models is their ability to handle non-linear relationships and interactions between features. However, they are prone to overfitting, especially when the trees become too complex.  
 <b>Bagging (Bootstrap Aggregating): </b> It's a technique that aims to reduce variance and prevent overfitting by training multiple models on different bootstrapped subsets of the dataset and then averaging the predictions. Random Forest is an ensemble method based on bagging, utilizing multiple decision trees trained on different subsets of the data.  
 <b>Boosting: </b> Boosting is an ensemble technique that combines weak learners (typically shallow trees) sequentially to create a strong model. It focuses on improving the shortcomings of its predecessors by assigning higher weight to misclassified data, effectively learning from previous mistakes. Gradient Boosting and XGBoost are examples of boosting algorithms.  
 
-<h4> 4.3.1 Random Forest </h4>  
+<h4> 3.3.1 Random Forest </h4>  
 It's an ensemble learning method that constructs multiple decision trees and merges their predictions to improve accuracy and reduce overfitting. It introduces randomness both in feature selection and dataset bootstrapping. By aggregating predictions from various trees, it tends to be more robust and less prone to overfitting compared to a single decision tree.  
 
-<h4> 4.3.2 Gradient Boosting </h4>  
+<h4> 3.3.2 Gradient Boosting </h4>  
 This is a boosting technique that builds trees sequentially. It fits each tree to the residuals (errors) of the preceding tree, reducing the errors at each step. Gradient boosting is a powerful algorithm known for its ability to handle complex data and achieve high accuracy.  
 
-<h4> 4.3.2 XGBoost (Extreme Gradient Boosting) </h4>  
+<h4> 3.3.2 XGBoost (Extreme Gradient Boosting) </h4>  
 It is an optimized and highly efficient implementation of gradient boosting. XGBoost improves upon the traditional gradient boosting method by introducing regularization, parallel computing, and a variety of enhancements that significantly speed up the training process and improve accuracy.
 
-<h3> 4.4 Support Vector Machines </h3>  
+<h3> 3.4 Support Vector Machines </h3>  
 Support Vector Machines (SVM) are powerful supervised learning models used for both classification and regression tasks. The primary goal of SVM is to find the optimal hyperplane that best separates data points into different classes. SVM works by finding the hyperplane that maximizes the margin between different classes in a dataset. This hyperplane is the one that creates the largest gap between the closest data points of different classes, also known as support vectors. SVM can handle non-linear data by mapping the input data into a higher-dimensional space using a kernel function (e.g., polynomial, radial basis function), where a linear separation is then performed.  
 The objective of SVM is to maximize the margin between classes while minimizing classification errors. It aims to generalize well on unseen data by finding the optimal decision boundary. In SVM, the regularization parameter (C) controls the trade-off between maximizing the margin and minimizing the classification error. A higher C value allows more points to be classified correctly but might lead to overfitting. They are originally designed for binary classification, but can be extended to handle multi-class problems using various strategies like one-vs-one or one-vs-rest.  
 The downside of SVM is that training an SVM on a large dataset can be computationally expensive, especially when using non-linear kernels or dealing with a high number of features. Also, Selecting an appropriate kernel and tuning its parameters can be challenging. It requires domain knowledge and often involves some trial and error. In addition, SVM can be sensitive to noise in the data, which might result in overfitting, especially if the margin is overly optimized.
 
 
-<h3> 4.5 Scoring the Model and Understanding the Scoring Metrics </h3>  
+<h3> 3.5 Scoring the Model and Understanding the Scoring Metrics </h3>  
 After obtaining and fitting a classification model, we need certain metrics to evaluate how well the model performs.Below are some metrics that can be used to evaluate the performance of a classification model:  
 <center>
 <img src="https://github.com/chinedu2301/data621-business-analytics-data-mining/blob/main/blogs/confusion-matrix.png?raw=true" />  
@@ -131,7 +118,7 @@ $F1 = \frac{2 * precision * recall}{precision + recall}$
 F1 is best for uneven distribution and it can be used to compare different models.</li>  
 
 
-<h3> 4.6 Underfitting and Overfitting </h3>  
+<h3> 3.6 Underfitting and Overfitting </h3>  
 In supervised machine learning problems, we aim to get a model that properly fits the training data and also generalizes well on new/test data. When the model is unable to generalize on new data, it is not able to perform its purpose. One of such causes could be as a result of underfitting or overffiting.  
 <li> **Undefitting: ** This is a situation in machine learning where a model does not properly fit the training data resulting in high training error and high test error. In this case, the model performs poorly on the training data as well as on new data.  An underfit machine learning model is not a suitable model for the data because it is not able to properly capture the relationship between the input examples (X) and the target values (Y).Poor performance on the training data could mean that the model is too simple to describe the target properly. A typical example of an underfit model is using a linear model for data points with quadratic relationship.  
 Since the model cannot generalize well on new data, it cannot be leveraged for prediction or classification tasks. High bias and low variance are good indicators of underfitting. </li>
@@ -162,7 +149,20 @@ There are different ways to decrease underfitting such are:
 <li>Use ensemble methods</li>  
 </br>  
 
+* * *
+
+<center> <h2> 4. METHODOLOGY </h2> </center> 
+```{r}
+#library(tidyverse)
+```
+<h3> 4.1 Dataset </h3> 
+<h3> 4.2 Data Pre-processing </h3> 
+<h4> 4.2.1 Data Cleaning </h4> </center> 
+<h4> 4.2.2 Feature Selection and pre-processing </h4>
+</b>  
+
 * * *  
+
 <center> <h2> 5. ANALYSIS, TESTING AND RESULTS </h2> </center> 
 <h3> 5.1 Analysis </h3>  
 <h4> 5.1.1 Data Cleaning and Pre-processing </h4>  
@@ -183,8 +183,17 @@ library(cowplot) # To combine plots in a grid
 <h3> 5.2 Testing </h3>
 <h3> 5.3 Results </h3>
 
+
+</br>
+
+***
+
 <center> <h2> 6. CONCLUSION </h2> </center> 
 
+
+</br>  
+
+***
 <center> <h2> 7. REFERENCES </h2> </center>  
 Agarwal, S., Ambrose, B. W., & Chomsisengphet, S. (2008). Determinants of automobile loan default and prepayment. Economic Perspectives - Federal Reserve Bank of Chicago.  
 
