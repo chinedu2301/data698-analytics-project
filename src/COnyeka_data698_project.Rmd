@@ -22,10 +22,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-#library(tidyverse)
-```
-
 <center> <h2> 0. ABSTRACT </h2> </center>  
 This project aims to predict the default of auto-loans using Machine Learning techniques. The dataset used was gotten from kaggle and contains about 41 variables and over 230,000 records of previous loan applicants.  
 Most banks typically uses Logistic Regression Model to make decision whether an applicant is at risk of default or not. However, in this project, several other machine learning techniques were explored such as Tree-based models like Random Forest, and XGBoost (Extreme Gradient Boosting) as well as the Support Vector Machines (SVM) and the Logistic Regression Models were used. However, due to time and resources constraints, the models were not fully exploited to get the best out of each of the models. Simply, hyper-parameter tuning was not done on the models that have tunable parameters.
@@ -67,6 +63,9 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 
 
 <center> <h2> 3. METHODOLOGY </h2> </center> 
+```{r}
+#library(tidyverse)
+```
 <h3> 3.1 DATASET </h3> 
 <h3> 3.2 Data Pre-processing </h3> 
 <h4> 3.2.1 Data Cleaning </h4> </center> 
@@ -74,9 +73,9 @@ Keeping the outcome of the above literature in mind, this project aims to contri
 </b>
 
 * * *
-<center> <h2> 4. INTRODUCTION TO MODELS </h2> </center> 
-<h3> 4.1 Predictive Analytics Overview </h3>
-
+<center> <h2> 4. OVERVIEW OF THE MODELS </h2> </center> 
+<h3> 4.1 Predictive Analytics Overview </h3>  
+Predictive analytics involves using historical data, statistical algorithms, and machine learning techniques to predict future outcomes. There are different types of algorithms for making predictions. Generally, we have regression models and classification models. Regression algorithms are mainly used when the variable to be predicted is a continuous value while classification algorithms are used to predict categories or classes.Classification algorithms are a fundamental part of predictive analytics and are used to categorize data into classes or groups based on specific features or attributes. Examples of classification algorithms include but not limited to Logistic Regression, Decision Trees, Random Forest, XGBoost, SVM, KNN, Naive Bayes, etc. The problem of vehicle loan default prediction is a classification problem and the classification algorithms that will be used to solve the problem of loan default in this project are briefly explained below:
 
 <h3> 4.2 Logistic Regression </h3>  
 Logistic Regression is a type of classification algorithm that is used when the response variable is binary in nature. Being binary means that the response variable is a two level categorical variable. The Logistic Regression model belongs to the family of generalized linear models (GLMs) and it's used when the response is a two-level categorical variable. Typical examples of binary response variables are Yes/No; Male/Female; Cancer/No Cancer; Approve/Deny, etc. These response variables are often coded as 1 or 0. Even though the name contains regression, the logistic regression model is often used when the response variable is discrete. i.e It is a classification algorithm.  
@@ -90,10 +89,24 @@ $logit(p_{i}) = log_{e}(\frac{p_{i}}{1-p_{i}}) = \beta_{0} + \beta_{1}x_{1,i} + 
 <li> Each predictor $x_{i}$ is linearly related to the $logit(p_{i})$ if other predictors are held constant. </li>  
 
 </br>
-<h3> 4.3 Tree-Based Methods </h3> 
-<h4> 4.3.1 Random Forest </h4> 
-<h4> 4.3.2 Gradient Boosting </h4>
+<h3> 4.3 Tree-Based Methods </h3>  
+Tree-based models are a type of supervised learning algorithm used for both classification and regression tasks. They construct a decision tree that recursively splits the data into subsets based on the most significant features. The tree structure consists of nodes representing the features, edges representing the decision rules, and leaves representing the output (class or value). The key advantage of tree-based models is their ability to handle non-linear relationships and interactions between features. However, they are prone to overfitting, especially when the trees become too complex.  
+<b>Bagging (Bootstrap Aggregating): </b> It's a technique that aims to reduce variance and prevent overfitting by training multiple models on different bootstrapped subsets of the dataset and then averaging the predictions. Random Forest is an ensemble method based on bagging, utilizing multiple decision trees trained on different subsets of the data.  
+<b>Boosting: </b> Boosting is an ensemble technique that combines weak learners (typically shallow trees) sequentially to create a strong model. It focuses on improving the shortcomings of its predecessors by assigning higher weight to misclassified data, effectively learning from previous mistakes. Gradient Boosting and XGBoost are examples of boosting algorithms.  
+
+<h4> 4.3.1 Random Forest </h4>  
+It's an ensemble learning method that constructs multiple decision trees and merges their predictions to improve accuracy and reduce overfitting. It introduces randomness both in feature selection and dataset bootstrapping. By aggregating predictions from various trees, it tends to be more robust and less prone to overfitting compared to a single decision tree.  
+
+<h4> 4.3.2 Gradient Boosting </h4>  
+This is a boosting technique that builds trees sequentially. It fits each tree to the residuals (errors) of the preceding tree, reducing the errors at each step. Gradient boosting is a powerful algorithm known for its ability to handle complex data and achieve high accuracy.  
+
+<h4> 4.3.2 XGBoost (Extreme Gradient Boosting) </h4>  
+It is an optimized and highly efficient implementation of gradient boosting. XGBoost improves upon the traditional gradient boosting method by introducing regularization, parallel computing, and a variety of enhancements that significantly speed up the training process and improve accuracy.
+
 <h3> 4.4 Support Vector Machines </h3>  
+Support Vector Machines (SVM) are powerful supervised learning models used for both classification and regression tasks. The primary goal of SVM is to find the optimal hyperplane that best separates data points into different classes. SVM works by finding the hyperplane that maximizes the margin between different classes in a dataset. This hyperplane is the one that creates the largest gap between the closest data points of different classes, also known as support vectors. SVM can handle non-linear data by mapping the input data into a higher-dimensional space using a kernel function (e.g., polynomial, radial basis function), where a linear separation is then performed.  
+The objective of SVM is to maximize the margin between classes while minimizing classification errors. It aims to generalize well on unseen data by finding the optimal decision boundary. In SVM, the regularization parameter (C) controls the trade-off between maximizing the margin and minimizing the classification error. A higher C value allows more points to be classified correctly but might lead to overfitting. They are originally designed for binary classification, but can be extended to handle multi-class problems using various strategies like one-vs-one or one-vs-rest.  
+The downside of SVM is that training an SVM on a large dataset can be computationally expensive, especially when using non-linear kernels or dealing with a high number of features. Also, Selecting an appropriate kernel and tuning its parameters can be challenging. It requires domain knowledge and often involves some trial and error. In addition, SVM can be sensitive to noise in the data, which might result in overfitting, especially if the margin is overly optimized.
 
 
 <h3> 4.5 Scoring the Model and Understanding the Scoring Metrics </h3>  
@@ -151,9 +164,22 @@ There are different ways to decrease underfitting such are:
 
 * * *  
 <center> <h2> 5. ANALYSIS, TESTING AND RESULTS </h2> </center> 
-<h3> 5.1 Analysis </h3>
-<h4> 5.1.1 Data Cleaning and Pre-processing </h4>
-<h4> 5.1.1 Exploratory Data Analysis </h4>
+<h3> 5.1 Analysis </h3>  
+<h4> 5.1.1 Data Cleaning and Pre-processing </h4>  
+**Libraries**  
+Load the required libraries for the analysis
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(Amelia) # To visualize missing data
+library(cowplot) # To combine plots in a grid
+```
+<h4> 5.1.2 Exploratory Data Analysis </h4>
+<h4> 5.1.2 Model Training </h4>
+<h5> 5.1.2.1 Model Training - Logistic Regression </h5>
+<h5> 5.1.2.2 Model Training - Random Forest </h5>
+<h5> 5.1.2.3 Model Training - XGBoost </h5>
+<h5> 5.1.2.4 Model Training - Support Vector Machines </h5>
 <h3> 5.2 Testing </h3>
 <h3> 5.3 Results </h3>
 
@@ -170,6 +196,9 @@ loans using logistic regression: Case of an indian nbfc. International Journal o
 
 Brownlee, J. (2019, August 12). Overfitting and Underfitting With Machine Learning Algorithms. Machine Learning Mastery. Retrieved November 4, 2023, from https://machinelearningmastery.com/overfitting-and-underfitting-with-machine-learning-algorithms/#:%7E:text=Overfitting%3A%20Good%20performance%20on%20the,poor%20generalization%20to%20other%20data
 
+Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp. 785-794).  
+
+Cortes, C., & Vapnik, V. (1995). Support-vector networks. Machine learning, 20(3), 273-297.  
 
 Crook, J. N., Edelman, D. B., & Thomas, L. C. (2007). Recent developments in consumer credit risk assessment. European Journal of Operational Research, 183, 447–1465.  
 
@@ -179,9 +208,13 @@ Diez, D., Barr, C. D., & Cetinkaya-Rundel, M. (2019). OpenIntro statistics 4th E
 
 Education, I. C. (2021, March 25). Underfitting. IBM Cloud Learn. Retrieved November 5, 2023, from https://www.ibm.com/cloud/learn/underfitting  
 
+Friedman, J. H. (2001). Greedy function approximation: a gradient boosting machine. Annals of statistics, 1189-1232.  
+
 GeeksforGeeks. (2021, October 20). ML | Underfitting and Overfitting. Retrieved November 4, 2023, from https://www.geeksforgeeks.org/underfitting-and-overfitting-in-machine-learning/  
 
 Hand, D.J. and Henley, W.E. (1997) Statistical Classification Methods in Consumer Credit Scoring: A Review. Journal of Royal Statistical Society, 160, 523-541.  
+
+Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction. Springer.  
 
 Hao, C., Alam, M. M., & Carling, K. (2010). Review of the literature on credit risk modeling: Development of the past 10 years. Banks and Bank Systems, 5 (3).
 
