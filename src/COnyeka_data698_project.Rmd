@@ -219,6 +219,8 @@ library(tidyverse)
 library(kableExtra)
 library(Amelia) # To visualize missing data
 library(cowplot) # To combine plots in a grid
+library(corrplot) # To plot correlation plot
+library(ggcorrplot) # To plot correlation plot
 ```
 
 Read the datasets into memory from the github location.
@@ -342,6 +344,21 @@ There are 27 columns (26 predictor variables and 1 response variable) and 233,15
 glimpse(vehicle_loan_default_train_cleaned)
 ```
 
+<h5>Check for Null Values </h5> 
+```{r amelia-null-values, warning=FALSE}
+# use missmap function from the Amelia package to check for NA values
+missmap(vehicle_loan_default_train_cleaned,
+        plot.background = element_rect(fill = "antiquewhite"),
+        main = "Vehicle Loan Default - Missing Values", 
+        x.cex = 0.45,
+        y.cex = 0.6,
+        margins = c(7.1, 7.1),
+        col = c("yellow", "black"), legend = FALSE)
+```
+
+<br>
+From the plot of missing values, we can see that there is no missing value in the data. No NA imputation or handling of nulls is necessary. 
+
 <h5>Check for Imbalance of data for the <b>loan_default</b> variable </h5>  
 ```{r}
 loan_default_grouped <- vehicle_loan_default_train_cleaned %>% group_by(loan_default) %>% 
@@ -369,8 +386,125 @@ p_bar_loan_default_category
 <br>
 From the values and plot above for the Loan Default categories, we can see that there are more values for category 0 (No default) than 1 (Default). Before, modeling the data, the data will be enhanced by oversampling the "default" category to achieve some form of balance in the data.  
 
-<h5>Check for Null Values </h5> 
+<h5>Age Distribution</h5>  
+```{r age-dist, warning=FALSE}
+# Age distribution - All categories
+age_dist_all <- vehicle_loan_default_train_cleaned %>% ggplot(aes(x = age_years)) +
+                    geom_histogram(binwidth = 2, fill = "blue", color = "white", alpha = 0.7) +
+                    labs(title = "Age Distribution - All Categories", x = "Age", y = "Frequency") + theme_minimal() +
+                    theme(plot.title = element_text(hjust = 0.5),
+                                                    panel.background = element_rect(fill = "gray80"),
+                                                    plot.background = element_rect(fill = "antiquewhite"))
 
+# Age distribution - Loan Default
+age_dist_loan_default <- vehicle_loan_default_train_cleaned %>% filter(loan_default == 1) %>% ggplot(aes(x = age_years)) +
+                    geom_histogram(binwidth = 2, fill = "blue", color = "white", alpha = 0.7) +
+                    labs(title = "Age Distribution - Loan Default", x = "Age", y = "Frequency") + theme_minimal() +
+                    theme(plot.title = element_text(hjust = 0.5),
+                                                    panel.background = element_rect(fill = "gray80"),
+                                                    plot.background = element_rect(fill = "antiquewhite"))
+
+# Age distribution - No Default
+age_dist_no_default <- vehicle_loan_default_train_cleaned %>% filter(loan_default == 0) %>% ggplot(aes(x = age_years)) +
+                    geom_histogram(binwidth = 2, fill = "blue", color = "white", alpha = 0.7) +
+                    labs(title = "Age Distribution - Loan Default", x = "Age", y = "Frequency") + theme_minimal() +
+                    theme(plot.title = element_text(hjust = 0.5),
+                                                    panel.background = element_rect(fill = "gray80"),
+                                                    plot.background = element_rect(fill = "antiquewhite"))
+
+# Plot all three plots
+plot_age_dist <- plot_grid(age_dist_loan_default, age_dist_no_default, age_dist_all, byrow = TRUE, nrow = 3) 
+plot_age_dist
+```
+<br>
+We can see that most of the age distribution is about the same for both loan_default and no-loan_default. Also, we can see that most of the applicants fall between 20 years old and 40 years old with a few applicants between 40 and 60 and almost none after 70 years old.
+
+<h5>CNS Score Description</h5>  
+The <b>perform_cns_score_description</b> basically categorizes the risk level of the applicant based on their credit score.  
+```{r cns_score_description, warning=FALSE}
+# All Categories
+cns_score_desc_all <- vehicle_loan_default_train_cleaned %>% group_by(perform_cns_score_description) %>% 
+                                summarise(count = n()) %>%
+                                mutate(percentage = round((count / sum(count) * 100), 2)) %>%
+                                ggplot(aes(x = perform_cns_score_description, y = percentage,
+                                                                    fill = factor(perform_cns_score_description))) +
+                                geom_bar(stat = "identity", position = "dodge") +
+                                labs(title = "Risk Level Distribution - All Categories", x = "Risk Level", y = "Percentage", 
+                                     fill = "Risk Level") +
+                                scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentages
+                                theme_minimal()  + theme(plot.title = element_text(hjust = 0.5),
+                                                         panel.background = element_rect(fill = "gray80"),
+                                                         plot.background = element_rect(fill = "antiquewhite"))
+
+cns_score_desc_all
+```
+<br>
+Significantly high proportion of the applicants fall under low_risk category and over 85% fall under either very_low_risk or low_risk. This may be due to the believe that applicants may prefer to work on their credit to improve their risk level before apply for vehicle loans especially as low_risk applicants tend to get better interest rates on their loans.  
+
+<h5> Loan Default Distribution By Risk Level</h5>
+```{r loan-default-risk-level, warning=FALSE}
+loan_default_risk_level <- vehicle_loan_default_train_cleaned %>% 
+                               count(loan_default, perform_cns_score_description, name = "Record_Count") %>%
+                               ggplot(aes(x=loan_default, y = Record_Count, fill = perform_cns_score_description)) +
+                               geom_bar(stat = "identity", position = "stack") +
+                               labs(title = "Loan Default Distribution by Risk Level", x = "Loan Default", y = "Percentage", 
+                                    fill = "Risk Level") + theme_minimal()  + 
+                               theme(plot.title = element_text(hjust = 0.5),
+                                                        panel.background = element_rect(fill = "gray80"),
+                                                        plot.background = element_rect(fill = "antiquewhite")) 
+loan_default_risk_level
+```
+<br>
+It is clear that a huge portion of the non-loan_default are categorized as low_risk or very_low_risk. Also, for the defaulters, the low_risk still constitute a huge portion.  
+
+<h5>Employment Type</h5>  
+```{r employment-type, warning=FALSE}
+employment_type <- vehicle_loan_default_train_cleaned %>% 
+                               count(loan_default, employment_type, name = "Record_Count") %>%
+                               ggplot(aes(x=loan_default, y = Record_Count, fill = employment_type)) +
+                               geom_bar(stat = "identity", position = "stack") +
+                               labs(title = "Loan Default Distribution by Employment Type", x = "Loan Default", y = "Percentage", 
+                                    fill = "Employment Type") + theme_minimal()  + 
+                               theme(plot.title = element_text(hjust = 0.5),
+                                                        panel.background = element_rect(fill = "gray80"),
+                                                        plot.background = element_rect(fill = "antiquewhite")) 
+employment_type
+```
+<br>
+Salaried or Self-Employed constitute most of the data in almost equal proportions for both categories of default although the self-employed are a little more.  
+
+<h5>Correlation Plot</h5>
+```{r cor-plot, warning=FALSE, message=FALSE}
+vehicle_loan_default_train_cleaned_numeric <- vehicle_loan_default_train_cleaned %>% 
+                                              select(-employment_type, -perform_cns_score_description)
+corr_matrix <- cor(vehicle_loan_default_train_cleaned_numeric)
+correlation_plot <- ggcorrplot(corr_matrix, 
+                               lab = TRUE, # Show axis labels
+                               lab_size = 2, # Adjust the size of axis labels
+                               hc.order = TRUE, # Reorder the correlation matrix
+                               type = "lower", 
+                               outline.col = "white", 
+                               colors = c("blue", "white", "red"), 
+                               ggtheme = ggplot2::theme_minimal(),
+                               title = "Correlation Plot") + coord_fixed(ratio = 0.9) + 
+                               theme(axis.text.x = element_text(size = 9, angle = 45, hjust = 1),
+                                     axis.text.y = element_text(size = 9, hjust = 1),
+                                     plot.title = element_text(hjust = 0.5),
+                                     panel.background = element_rect(fill = "gray80"),
+                                     plot.background = element_rect(fill = "antiquewhite"),
+                                     axis.title = element_text(size = 10)) +labs(x = NULL, y = NULL)
+```
+
+```{r cor-plot-display, warning=FALSE}
+correlation_plot
+```
+
+<br>
+
+<h5></h5>
+```{r}
+
+```
 
 
 
