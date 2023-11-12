@@ -332,6 +332,49 @@ cleaned_data_few_records
 
 <br>
 <h4> 5.1.2 Exploratory Data Analysis </h4>
+<h5> Check Shape of data</h5>
+```{r shape-of-data, warning=FALSE}
+dim(vehicle_loan_default_train_cleaned)
+```
+There are 27 columns (26 predictor variables and 1 response variable) and 233,154 observations.  
+<h5> Take a Glimpse at the data </h5>  
+```{r glimpse-of-data, warning=FALSE}
+glimpse(vehicle_loan_default_train_cleaned)
+```
+
+<h5>Check for Imbalance of data for the <b>loan_default</b> variable </h5>  
+```{r}
+loan_default_grouped <- vehicle_loan_default_train_cleaned %>% group_by(loan_default) %>% 
+                        summarise(count = n()) %>%
+                        mutate(percentage = round((count / sum(count) * 100), 2))
+
+loan_default_grouped_displayed <- kable(head(loan_default_grouped, 200), "html") %>% 
+                                  kable_paper("hover", full_width = F)
+loan_default_grouped_displayed
+```
+
+
+```{r bar-chart-loan-default-category}
+p_bar_loan_default_category <- loan_default_grouped %>% ggplot(aes(x=factor(loan_default), 
+                                                                   y = percentage, fill = factor(loan_default))) +
+                               geom_bar(stat = "identity", position = "dodge") +
+                               labs(title = "Loan Default Distribution", x = "Loan Default", y = "Percentage", 
+                                    fill = "Loan Default") +
+                               scale_y_continuous(labels = scales::percent_format(scale = 1)) +  # Format y-axis as percentages
+                               theme_minimal()  + theme(plot.title = element_text(hjust = 0.5),
+                                                        panel.background = element_rect(fill = "gray80"),
+                                                        plot.background = element_rect(fill = "antiquewhite"))                          
+p_bar_loan_default_category
+```
+<br>
+From the values and plot above for the Loan Default categories, we can see that there are more values for category 0 (No default) than 1 (Default). Before, modeling the data, the data will be enhanced by oversampling the "default" category to achieve some form of balance in the data.  
+
+<h5>Check for Null Values </h5> 
+
+
+
+
+
 <h4> 5.2.2 Model Training </h4>
 <h5> 5.2.2.1 Model Training - Logistic Regression </h5>
 <h5> 5.2.2.2 Model Training - Random Forest </h5>
