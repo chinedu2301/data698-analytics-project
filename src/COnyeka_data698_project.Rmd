@@ -152,14 +152,60 @@ There are different ways to decrease underfitting such are:
 * * *
 
 <center> <h2> 4. METHODOLOGY </h2> </center> 
-```{r}
-#library(tidyverse)
-```
-<h3> 4.1 Dataset </h3> 
-<h3> 4.2 Data Pre-processing </h3> 
-<h4> 4.2.1 Data Cleaning </h4> </center> 
-<h4> 4.2.2 Feature Selection and pre-processing </h4>
-</b>  
+<h3> 4.1 Dataset </h3>   
+The data used in this analysis was obtained from [Kaggle](https://www.kaggle.com/datasets/avikpaul4u/vehicle-loan-default-prediction/data). The csv files containing the data was downloaded from kaggle and placed in [github](https://github.com/chinedu2301/data698-analytics-project/tree/main/data). There are three files which are: train dataset, test dataset, and dictionary. The dictionary file explains what the variables represent.  
+
+<h5>Variables</h5>  
+There are about 41 variables in the dataset. forty (40) of the variables are predictor variables while there is one response variable. The variables in the dataset are:  
+<li> <b>UniqueID</b>: Identifier for customer </li>
+<li> <b>loan_default</b>: Payment default in the first EMI on due date </li>
+<li> <b>disbursed_amount</b>: Amount of loan disbursed </li>
+<li> <b>asset_cost</b>: Cost of the Asset </li>
+<li> <b>ltv</b>: Loan to Value of asset </li>
+<li> <b>branch_id</b>: Branch where the loan was disbursed </li>
+<li> <b>supplier_id</b>: Vehicle Dealer where the loan was disbursed </li>
+<li> <b>manufacturer_id</b>: Vehicle manufacturer (Hero, Honda, TVS, etc.) </li>
+<li> <b>Current_pincode</b>: Current pincode of the customer </li>
+<li> <b>Date.of.Birth</b>: Date of Birth of the customer</li>
+<li> <b>Employment.Type</b>: Employment Type of the customer (Salaried/Self Employed) </li>
+<li> <b>DisbursalDate</b>: Date of loan disbursement </li>
+<li> <b>State_ID</b>: State of disbursement</li>
+<li> <b>MobileNo_Avl_Flag</b>: If Mobile no. was shared by the customer then flagged as 1 </li>
+<li> <b>Aadhar</b>: If aadhar was shared by the customer then flagged as 1 </li>
+<li> <b>PAN_flag</b>: If pan was shared by the customer then flagged as 1</li>
+<li> <b>VoterID_flag</b>: If voter Id was shared by the customer then flagged as 1</li>
+<li> <b>Driving_flag</b>: If Driver license was shared by the customer then flagged as 1 </li>
+<li> <b>Passport_flag</b>: If passport was shared by the customer then flagged as 1 </li>
+<li> <b>PERFORM_CNS.SCORE</b>: Bureau Score</li>
+<li> <b>PERFORM_CNS.SCORE.DESCRIPTION</b>: Bureau Score description</li>
+<li> <b>PRI.NO.OF.ACCTS</b>: Count of total loans taken by the customer at the time of disbursement</li>
+<li> <b>PRI.ACTIVE.ACCTS</b>: Count of active loans taken by the customer at the time of disbursement</li>
+<li> <b>PRI.OVERDUE.ACCTS</b>: Count of default accounts at the time of disbursement</li>
+<li> <b>PRI.CURRENT.BALANCE</b>: Total principal outstanding amount of the active loans at the time of disbursement</li>
+<li> <b>PRI.SANCTIONED.AMOUNT</b>: Total amount that was sanctioned for all the loans at the time of disbursement</li>
+<li> <b>PRI.DISBURSED.AMOUNT</b>: Total amount that was disbursed for all the loans at the time of disbursement</li>
+<li> <b>SEC.NO.OF.ACCTS</b>: Count of total loans taken by the customer at the time of disbursement</li>
+<li> <b>SEC.ACTIVE.ACCTS</b>: Count of active loans taken by the customer at the time of disbursement</li>
+<li> <b>SEC.OVERDUE.ACCTS</b>: Count of default accounts at the time of disbursement</li>
+<li> <b>SEC.CURRENT.BALANCE</b>: Total principal outstanding amount of the active loans at the time of disbursement</li>
+<li> <b>SEC.SANCTIONED.AMOUNT</b>: Total amount that was sanctioned for all the loans at the time of disbursement</li>
+<li> <b>SEC.DISBURSED.AMOUNT</b>: Total amount that was disbursed for all the loans at the time of disbursement</li>
+<li> <b>PRIMARY.INSTAL.AMT</b>: EMI Amount of the primary loan</li>
+<li> <b>SEC.INSTAL.AMT</b>: EMI Amount of the secondary loan</li>
+<li> <b>NEW.ACCTS.IN.LAST.SIX.MONTHS</b>: New loans taken by the customer in the last 6 months before the disbursement</li>
+<li> <b>DELINQUENT.ACCTS.IN.LAST.SIX.MONTHS</b>: Loans defaulted in the last 6 months</li>
+<li> <b>AVERAGE.ACCT.AGE</b>: Average loan tenure</li>
+<li> <b>CREDIT.HISTORY.LENGTH</b>: Time since first loan</li>
+<li> <b>NO.OF_INQUIRIES</b>: Enquiries done by the customer for loans</li>  
+Note: Primary accounts are those which the customer has taken for his personal use while secondary accounts are those which the customer act as a co-applicant or guarantor.  
+The response variable is the <b>loan_default</b> variable and it is a two level categorical variable with a value of 1 fir default and value 0 for no default.
+
+
+<h3> 4.2 Data Cleaning and Pre-processing </h3> 
+The data cleaning and pre-processing aspect of the analysis mainly involved creating derived field such as the age of the loan applicant, renaming the columns to standardize the naming conventions, adjusting the datatype of the columns, and selecting columns that would be used in the modeling/training of the data. 
+The train and test dataset are already separate to start with and since the test data will be used in testing the results of the model, it too would need to be cleaned and pre-processed. To avoid extra work and errors, the functional approach has been adopted. The analysis is broken down into different sections and a single R-function is responsible for each section of the analysis. The sections are: data cleaning and pre-processing; modeling/training; and testing. Hence, there are 3 R functions: data_cleaning_preprocess; modeling_training; and predict_testing that handle each sections respectively. That way, when it is time to analyze new data, the new data is simply passed into those set of functions to achieve the desired results. Although, there is a section for exploratory data analysis, there is no function that does this.
+Also, because the data is not balanced (unequal number of observations for values 1 and 0 for the response variable), the dataset was enhanced to ensure equality of the two levels to prevent the model from correctly predicting one class better 
+ 
 
 * * *  
 
@@ -168,20 +214,131 @@ There are different ways to decrease underfitting such are:
 <h4> 5.1.1 Data Cleaning and Pre-processing </h4>  
 **Libraries**  
 Load the required libraries for the analysis
-```{r warning=FALSE, message=FALSE}
+```{r load-libraries, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(kableExtra)
 library(Amelia) # To visualize missing data
 library(cowplot) # To combine plots in a grid
 ```
+
+Read the datasets into memory from the github location.
+```{r read-data, warning=FALSE, message=FALSE}
+url_vehicle_loan_default_train = "https://raw.githubusercontent.com/chinedu2301/data698-analytics-project/main/data/vehicle_default_train_data.csv"
+url_vehicle_loan_default_test = "https://raw.githubusercontent.com/chinedu2301/data698-analytics-project/main/data/vehicle_default_test_data.csv"
+vehicle_loan_default_train_raw = read_csv(url_vehicle_loan_default_train) %>% as_tibble()
+vehicle_loan_default_test_raw = read_csv(url_vehicle_loan_default_test) %>% as_tibble()
+```
+
+Display a few records of the dataset to have an idea of how the data looks like.
+```{r display-head}
+# display a few records of the raw data
+raw_data_few_records <- kable(head(vehicle_loan_default_train_raw, 50), "html") %>%
+                        kable_paper("hover", full_width = F) %>%
+                        scroll_box(width = "850px", height = "350px")
+raw_data_few_records
+```
+
+<br>
+<h4>data_cleaning_preprocess function</h4>  
+The function does cleaning of the data. It only accepts a dataframe (or a tibble) 
+```{r data_cleaning_preprocess, warning=FALSE, message=FALSE}
+data_cleaning_preprocess <- function(df){
+  # This function accepts a dataframe (df) as input and returns another dataframe (cleaned_df) that is clean.
+  tryCatch({
+  if(is_tibble(df) | is.data.frame(df)){
+    print("The dataframe is a tibble, will proceed to clean data")
+    print("Data Cleaning in progress...")
+    # rename all the columns in the dataframe to lowercase
+    cleaned_df <- df %>% rename_all(tolower) %>%  
+                # compute the age of the applicant in number of years
+                mutate(date_of_birth = dmy(date_of_birth),  
+                      disbursal_date = dmy(disbursal_date), 
+                      age = difftime(disbursal_date, date_of_birth, units = "days"),
+                      age_years = round(as.numeric(age / 365.25), 0)) %>%
+               # extract the years and month component of the average_acct_age  and convert to years
+                mutate(average_acct_age_year_comp = as.numeric(str_extract(average_acct_age, "\\d+")),
+                      average_acct_age_mon_comp = as.numeric(str_extract(average_acct_age, "\\d+(?=mon)")),
+                      average_acct_age = round((average_acct_age_year_comp + average_acct_age_mon_comp/12), 0)
+                       ) %>%
+                # extract the years and month component of the credit_history_length and convert to years
+                mutate(credit_history_length_year_comp = as.numeric(str_extract(credit_history_length, "\\d+")),
+                       credit_history_length_comp = as.numeric(str_extract(credit_history_length, "\\d+(?=mon)")),
+                       credit_history_length = round((credit_history_length_year_comp + credit_history_length_comp/12), 0)
+                       )  %>%
+                # clean up the perform_cns_score_distribution to include only a few categories
+                mutate(lowercase_cns_description = tolower(perform_cns_score_description),
+                       perform_cns_score_description = case_when(
+                                str_detect(lowercase_cns_description, "very low risk") ~ "very_low_risk",
+                                str_detect(lowercase_cns_description, "low risk") ~ "low_risk",
+                                str_detect(lowercase_cns_description, "medium risk") ~ "medium_risk",
+                                str_detect(lowercase_cns_description, "high risk") ~ "high_risk",
+                                str_detect(lowercase_cns_description, "very high risk") ~ "very_high_risk",
+                                str_detect(lowercase_cns_description, "not scored|no bureau") ~ "low_risk",
+                                TRUE ~ "none"))  %>%
+                # clean up the employment type to have only few categories
+                mutate(lower_case_employment_type = tolower(employment_type),
+                       employment_type = case_when(
+                                str_detect(lower_case_employment_type, "salaried") ~ "salaried",
+                                str_detect(lower_case_employment_type, "self employed") ~ "self_employed",
+                                TRUE ~ "not_reported")) %>%
+                # select only the required columns
+                select(
+                  age_years, disbursed_amount, asset_cost, ltv, manufacturer_id, employment_type, perform_cns_score_description,
+                  pri_no_of_accts, pri_active_accts, pri_overdue_accts, pri_current_balance, pri_sanctioned_amount,
+                  pri_disbursed_amount, sec_no_of_accts, sec_active_accts, sec_overdue_accts, sec_current_balance,
+                  sec_sanctioned_amount, sec_disbursed_amount, primary_instal_amt, sec_instal_amt, new_accts_in_last_six_months,
+                  delinquent_accts_in_last_six_months, average_acct_age, credit_history_length, no_of_inquiries, loan_default
+                )
+                print("Data Cleaning complete!!!")
+    return(cleaned_df)
+    
+  }
+  else{
+  print("The dataframe is not a tibble. Kindly have your data in the form of a dataframe or a tibble")
+  }
+    
+  },
+  #if an error occurs, tell me the error
+  error=function(e) {
+        message('An Error Occurred')
+        print(e)
+        },
+  #or if a warning occurs, tell me the warning
+  warning=function(w) {
+        message('A Warning Occurred')
+        print(w)
+        return(NA)
+        }
+    )
+  
+}
+```
+
+Use the data_cleaning_preprocess function to clean the data.
+
+```{r}
+# clean the data
+vehicle_loan_default_train_cleaned = data_cleaning_preprocess(vehicle_loan_default_train_raw)
+```
+ Display a few records of the cleaned data.
+
+```{r}
+# display a few records of the cleaned data
+cleaned_data_few_records <- kable(head(vehicle_loan_default_train_cleaned, 200), "html") %>% 
+                            kable_paper("hover", full_width = F) %>%
+                            scroll_box(width = "850px", height = "350px")
+cleaned_data_few_records
+```
+
+<br>
 <h4> 5.1.2 Exploratory Data Analysis </h4>
-<h4> 5.1.2 Model Training </h4>
-<h5> 5.1.2.1 Model Training - Logistic Regression </h5>
-<h5> 5.1.2.2 Model Training - Random Forest </h5>
-<h5> 5.1.2.3 Model Training - XGBoost </h5>
-<h5> 5.1.2.4 Model Training - Support Vector Machines </h5>
-<h3> 5.2 Testing </h3>
-<h3> 5.3 Results </h3>
+<h4> 5.2.2 Model Training </h4>
+<h5> 5.2.2.1 Model Training - Logistic Regression </h5>
+<h5> 5.2.2.2 Model Training - Random Forest </h5>
+<h5> 5.2.2.3 Model Training - XGBoost </h5>
+<h5> 5.2.2.4 Model Training - Support Vector Machines </h5>
+<h3> 5.3 Testing </h3>
+<h3> 5.4 Results </h3>
 
 
 </br>
