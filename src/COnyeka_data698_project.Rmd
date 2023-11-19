@@ -221,6 +221,10 @@ library(Amelia) # To visualize missing data
 library(cowplot) # To combine plots in a grid
 library(corrplot) # To plot correlation plot
 library(ggcorrplot) # To plot correlation plot
+library(ROSE) # to balance the data
+library(randomForest)
+library(xgboost)
+library(e1071)
 ```
 
 Read the datasets into memory from the github location.
@@ -241,10 +245,10 @@ raw_data_few_records
 ```
 
 <br>
-<h4>data_cleaning_preprocess function</h4>  
+<h4>data_cleaning function</h4>  
 The function does cleaning of the data. It only accepts a dataframe (or a tibble) 
 ```{r data_cleaning_preprocess, warning=FALSE, message=FALSE}
-data_cleaning_preprocess <- function(df){
+data_cleaning <- function(df){
   # This function accepts a dataframe (df) as input and returns another dataframe (cleaned_df) that is clean.
   tryCatch({
   if(is_tibble(df) | is.data.frame(df)){
@@ -285,7 +289,7 @@ data_cleaning_preprocess <- function(df){
                                 TRUE ~ "not_reported")) %>%
                 # select only the required columns
                 select(
-                  age_years, disbursed_amount, asset_cost, ltv, manufacturer_id, employment_type, perform_cns_score_description,
+                  age_years, disbursed_amount, asset_cost, ltv, employment_type, perform_cns_score_description,
                   pri_no_of_accts, pri_active_accts, pri_overdue_accts, pri_current_balance, pri_sanctioned_amount,
                   pri_disbursed_amount, sec_no_of_accts, sec_active_accts, sec_overdue_accts, sec_current_balance,
                   sec_sanctioned_amount, sec_disbursed_amount, primary_instal_amt, sec_instal_amt, new_accts_in_last_six_months,
@@ -316,11 +320,11 @@ data_cleaning_preprocess <- function(df){
 }
 ```
 
-Use the data_cleaning_preprocess function to clean the data.
+Use the data_cleaning function to clean the data.
 
 ```{r}
 # clean the data
-vehicle_loan_default_train_cleaned = data_cleaning_preprocess(vehicle_loan_default_train_raw)
+vehicle_loan_default_train_cleaned = data_cleaning(vehicle_loan_default_train_raw)
 ```
  Display a few records of the cleaned data.
 
@@ -338,7 +342,7 @@ cleaned_data_few_records
 ```{r shape-of-data, warning=FALSE}
 dim(vehicle_loan_default_train_cleaned)
 ```
-There are 27 columns (26 predictor variables and 1 response variable) and 233,154 observations.  
+There are 26 columns (25 predictor variables and 1 response variable) and 233,154 observations.  
 <h5> Take a Glimpse at the data </h5>  
 ```{r glimpse-of-data, warning=FALSE}
 glimpse(vehicle_loan_default_train_cleaned)
@@ -501,15 +505,136 @@ correlation_plot
 
 <br>
 
-<h5></h5>
-```{r}
+<h4> 5.2.2 Model Training </h4>
+<h5>Preprocess the data</h5> 
+Since the data is imbalanced, we preprocess the data to get a balanced dataset and also standardize the numeric variables in the data using the standard normal distribution.
 
+```{r pre-processing}
+data_preprocess_scaling <- function(df){
+                      # This helper function standardizes the numeric variables of the df using the standard normal method
+                      df <- as.data.frame(df)
+                      df_char <- df %>% select(loan_default, employment_type, perform_cns_score_description) %>%
+                                        mutate(loan_default = factor(loan_default))
+                      df_numeric <- df %>% select(-loan_default, -employment_type, -perform_cns_score_description)
+                      df_numeric_scaled <- df_numeric %>% mutate_all( ~ (scale(.) %>% as.vector))
+                      df_scaled_combined <- cbind(df_char, df_numeric_scaled)
+                      return(df_scaled_combined)
+}
+
+
+data_preprocessing <- function(df, mode = "train"){
+    # This function pre-processes the cleaned data and get the data ready for training.
+    tryCatch({
+      if(is_tibble(df) | is.data.frame(df)){
+        if(mode == "test"){
+           df_scaled <- data_preprocess_scaling(df)
+           print("Data Pre-processing complete")
+           return(df_scaled)
+           
+        } else if(mode == "train"){
+          curr_frame <<- sys.nframe() # sends the current frame to the global environment.
+          # The ovun.sample function in the ROSE package assumes the data to be in the global env so you have to tell it  
+          # which frame (scope) to find the data else this will fail if executed inside a function.
+          df_ovun <- ovun.sample(formula = formula(loan_default ~ .), data = get("df", sys.frame(curr_frame)),
+                                 p = 0.5, seed = 1994, method = "both")$data %>% as.data.frame() %>% as_tibble()
+          print("Oversampling and undersampling completed")
+          df_scaled <- data_preprocess_scaling(df_ovun)
+          print("Data Pre-processing complete!")
+          return(df_scaled)
+          
+        } else {
+          print("You did not enter a valid mode type: Enter train or test for mode")
+          
+        }
+      }
+      
+    else{
+    print("The dataframe is not a tibble. Kindly have your data in the form of a dataframe or a tibble")
+  }
+    
+  },
+  #if an error occurs, tell me the error
+  error=function(e) {
+        message('An Error Occurred')
+        print(e)
+        },
+  #or if a warning occurs, tell me the warning
+  warning=function(w) {
+        message('A Warning Occurred')
+        print(w)
+        return(NA)
+        }
+    )
+  
+}
+```
+
+```{r preprocess-data}
+df = data_preprocessing(vehicle_loan_default_train_cleaned, mode = "train")
+```
+
+<h5>Develop function to train the data </h5> 
+
+```{r model-training}
+data_training <- function(df, mode = "logistic"){
+  
+          if(mode == "logistic"){
+              print("Training a Logistic Regression Model...")
+              logistic_model <- glm(formula = loan_default ~ . , 
+                                       family = binomial(link = 'logit'), data = df)
+              return(logistic_model)
+           
+        } else if(mode == "rf"){
+              print("Training a Random Forest Classification Model...")
+              rf_model <- randomForest(loan_default ~ . , data = df, ntree = 100, proximity = TRUE)
+              return(rf_model)         
+
+          return(df)
+          
+        } else if(mode == "xgboost"){
+              print("Training an XGBoost  Classification Model...")
+              xgb_model <- xgboost(data = df, label = df$loan_default, nthread = 2, nrounds = 2,
+                                   max.depth = 4, eta = 0.2, objective = "binary:logistic")
+              print("XGBoost Training complete")
+              return(xgb_model)
+          
+        } else if(mode == "svm"){
+              print("Training an SVM  Classification Model...")
+              svm_model <- svm(loan_default ~ . , data = df, kernel = "linear",type = "C-classification")
+              print("SVM Training complete")
+              return(svm_model)
+          
+          
+        } else {
+          print("You did not enter a valid mode type: Enter logistic, rf, xgboost or svm")
+          
+        }
+      
+
+}
+```
+
+```{r}
+model1 <- data_training(df, mode = "svm")
+```
+
+```{r}
+summary(model1)
 ```
 
 
 
 
-<h4> 5.2.2 Model Training </h4>
+```{r}
+#loan_default_ovun_grouped <- df %>% group_by(loan_default) %>% 
+                        #summarise(count = n()) %>%
+                        #mutate(percentage = round((count / sum(count) * 100), 2))
+
+#loan_default_ovun_grouped_displayed <- kable(head(loan_default_ovun_grouped, 200), "html") %>% 
+                                  #kable_paper("hover", full_width = F)
+#loan_default_ovun_grouped_displayed
+```
+
 <h5> 5.2.2.1 Model Training - Logistic Regression </h5>
 <h5> 5.2.2.2 Model Training - Random Forest </h5>
 <h5> 5.2.2.3 Model Training - XGBoost </h5>
