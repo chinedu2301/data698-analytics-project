@@ -223,8 +223,10 @@ library(corrplot) # To plot correlation plot
 library(ggcorrplot) # To plot correlation plot
 library(ROSE) # to balance the data
 library(randomForest)
+library(ranger) # for random forest implementation
 library(xgboost)
 library(e1071)
+library(caret)
 ```
 
 Read the datasets into memory from the github location.
@@ -575,6 +577,23 @@ df = data_preprocessing(vehicle_loan_default_train_cleaned, mode = "train")
 
 <h5>Develop function to train the data </h5> 
 
+```{r}
+#svm_model <- svm(loan_default ~ ., df)
+```
+
+
+```{r}
+#summary(svm_model)
+```
+
+
+```{r}
+#print(svm_model)
+```
+
+
+
+
 ```{r model-training}
 data_training <- function(df, mode = "logistic"){
   
@@ -586,14 +605,18 @@ data_training <- function(df, mode = "logistic"){
            
         } else if(mode == "rf"){
               print("Training a Random Forest Classification Model...")
-              rf_model <- randomForest(loan_default ~ . , data = df, ntree = 100, proximity = TRUE)
-              return(rf_model)         
-
-          return(df)
+              rf_model_ranger <- ranger(
+                                 formula   = loan_default ~ ., 
+                                 data      = df, 
+                                 num.trees = 500,
+                                 mtry      = floor(length(df) / 3)
+                                 )
+              return(rf_model_ranger)         
           
         } else if(mode == "xgboost"){
               print("Training an XGBoost  Classification Model...")
-              xgb_model <- xgboost(data = df, label = df$loan_default, nthread = 2, nrounds = 2,
+              df <- dummyVars("~.", data = df)
+              xgb_model <- xgboost(data = as.matrix(df), label = loan_default, nthread = 2, nrounds = 2,
                                    max.depth = 4, eta = 0.2, objective = "binary:logistic")
               print("XGBoost Training complete")
               return(xgb_model)
@@ -604,36 +627,24 @@ data_training <- function(df, mode = "logistic"){
               print("SVM Training complete")
               return(svm_model)
           
-          
         } else {
           print("You did not enter a valid mode type: Enter logistic, rf, xgboost or svm")
           
         }
       
-
 }
 ```
 
 ```{r}
-model1 <- data_training(df, mode = "svm")
+model1 <- data_training(df, mode = "rf")
 ```
 
 ```{r}
-summary(model1)
+#print for rf model
+print(model1)
 ```
 
 
-
-
-```{r}
-#loan_default_ovun_grouped <- df %>% group_by(loan_default) %>% 
-                        #summarise(count = n()) %>%
-                        #mutate(percentage = round((count / sum(count) * 100), 2))
-
-#loan_default_ovun_grouped_displayed <- kable(head(loan_default_ovun_grouped, 200), "html") %>% 
-                                  #kable_paper("hover", full_width = F)
-#loan_default_ovun_grouped_displayed
-```
 
 <h5> 5.2.2.1 Model Training - Logistic Regression </h5>
 <h5> 5.2.2.2 Model Training - Random Forest </h5>
