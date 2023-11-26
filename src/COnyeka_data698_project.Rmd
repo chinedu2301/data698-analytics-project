@@ -56,7 +56,7 @@ Lessmann et al.(2015) compared about 41 classifiers based on six performance mea
 
 Agrawal et al.(2014) studied the impact of contract-specific variables as predictors in commercial vehicle loans. In their research, applying a logistic regression model for predicting default, around 11 out of 17 contract-specific variables where identified to provide additional assistance for the credit lending institution(Agrawal, Agrawal, & Raizada, 2014). The authors also suggest that contract information could improve the accuracy in more advanced nonlinear models. Specifically, the authors suggest the use of Neural Networks as one potential predictive model to improve the performance based on contract information(Agrawal et al.,2014).  
 
-Keeping the outcome of the above literature in mind, this project aims to contribute to the field of vehicle loan prediction by developing machine learning models that will be able to predict vehicle loan default based on the available data, and  also compare  three (3) models: Random Forest, XGBoost, and SVM models to the industry standard Logistic Regression model. The data set used in this project contains more data than those used in most of the literature reviewed above. Statistically, more data provides better results and we hope that will be useful in better comparing the model and decide which model provides the best prediction metrics. In this work, we explain the data used, the pre-processing and feature selection involved and also provide a quick overview of predictive analytics as well as quick review to help understand the scoring metrics for classification problems. In addition, each of the models used are briefly explained and then the analysis of the data followed by modeling/testing and then conclusion on the findings.
+Keeping the outcome of the above literature in mind, this project aims to contribute to the field of vehicle loan prediction by developing machine learning models that will be able to predict vehicle loan default based on the available data, and  also compare  three (3) models: Random Forest, XGBoost, and Neural Networks models to the industry standard Logistic Regression model. The data set used in this project contains more data than those used in most of the literature reviewed above. Statistically, more data provides better results and we hope that will be useful in better comparing the model and decide which model provides the best prediction metrics. In this work, we explain the data used, the pre-processing and feature selection involved and also provide a quick overview of predictive analytics as well as quick review to help understand the scoring metrics for classification problems. In addition, each of the models used are briefly explained and then the analysis of the data followed by modeling/testing and then conclusion on the findings.
 </br>
 
 * * *
@@ -93,7 +93,38 @@ It is an optimized and highly efficient implementation of gradient boosting. XGB
 <h3> 3.4 Support Vector Machines </h3>  
 Support Vector Machines (SVM) are powerful supervised learning models used for both classification and regression tasks. The primary goal of SVM is to find the optimal hyperplane that best separates data points into different classes. SVM works by finding the hyperplane that maximizes the margin between different classes in a dataset. This hyperplane is the one that creates the largest gap between the closest data points of different classes, also known as support vectors. SVM can handle non-linear data by mapping the input data into a higher-dimensional space using a kernel function (e.g., polynomial, radial basis function), where a linear separation is then performed.  
 The objective of SVM is to maximize the margin between classes while minimizing classification errors. It aims to generalize well on unseen data by finding the optimal decision boundary. In SVM, the regularization parameter (C) controls the trade-off between maximizing the margin and minimizing the classification error. A higher C value allows more points to be classified correctly but might lead to overfitting. They are originally designed for binary classification, but can be extended to handle multi-class problems using various strategies like one-vs-one or one-vs-rest.  
-The downside of SVM is that training an SVM on a large dataset can be computationally expensive, especially when using non-linear kernels or dealing with a high number of features. Also, Selecting an appropriate kernel and tuning its parameters can be challenging. It requires domain knowledge and often involves some trial and error. In addition, SVM can be sensitive to noise in the data, which might result in overfitting, especially if the margin is overly optimized.
+The downside of SVM is that training an SVM on a large dataset can be computationally expensive, especially when using non-linear kernels or dealing with a high number of features. Also, Selecting an appropriate kernel and tuning its parameters can be challenging. It requires domain knowledge and often involves some trial and error. In addition, SVM can be sensitive to noise in the data, which might result in overfitting, especially if the margin is overly optimized.  
+
+<h3> 3.4 Neural Networks </h3>  
+Artificial Neural Networks (ANNs) are a class of machine learning models inspired by the structure and function of the human brain. They consist of interconnected nodes, known as neurons, organized in layers to process and learn from data.  
+
+<b>Structure of ANNs </b>  
+<li><b>Neurons(Nodes):</b> Neurons are the basic units in an ANN. Each neuron receives input signals, performs computations, and produces an output signal that is transmitted to other neurons in the network. </li> 
+<li><b>Layers: </b> ANNs typically consist of three types of layers:  
+*Input Layer:* Receives input data and passes it to the next layer.  
+*Hidden Layers:* Intermediate layers between the input and output layers. They extract and transform features through complex computations.  
+*Output Layer:* Produces the final output or prediction based on the learned representations from the hidden layers. </li>
+<li><b>Connections (Weights):</b> Neurons are connected to neurons in adjacent layers by weighted connections. These weights are adjusted during the learning process to optimize the network's performance.  </li>
+
+<b>Training Process</b>  
+<li><b>Forward Propagation:</b> Input data is passed through the network, and computations are performed layer by layer, generating an output. </li>
+<li><b>Loss Calculation:</b> The output is compared to the actual target, and a loss function measures the difference between the predicted and actual values. </li> 
+<li><b>Backpropagation:</b> The algorithm calculates gradients of the loss function with respect to the weights of the network using chain rule and propagates this information backward through the network. </li>  
+<li><b>Weight Update:</b> The weights are adjusted using optimization algorithms (e.g., gradient descent) to minimize the loss function, making the predictions closer to the actual values.  </li>
+
+<b>Types of ANNs</b>  
+<li><b>Feedforward Neural Networks (FNN):</b> The most basic type where information flows in one direction—from input to output without cycles. This is the type used in this project.</li>
+<li><b>Recurrent Neural Networks (RNN):</b> Networks that allow feedback loops, enabling them to process sequential data by retaining memory of previous inputs.</li>  
+<li><b>Convolutional Neural Networks (CNN):</b> Specialized for processing grid-like data, such as images. They use convolutional layers to learn features hierarchically.  </li>
+
+<b>Applications</b>
+*Image and Speech Recognition:* CNNs are widely used in image classification, object detection, and speech recognition.  
+*Natural Language Processing (NLP):* RNNs and variants like LSTM and GRU are used for text analysis, language translation, and sentiment analysis.  
+*Predictive Modeling:* ANNs are applied in various predictive tasks, including regression, classification, and time-series forecasting.  
+
+<b>Challenges</b>
+*Computational Complexity:* Training large ANNs can be computationally intensive and require significant resources.  
+*Overfitting:* ANNs, especially with complex architectures, can overfit the training data if not properly regularized or trained on diverse data.  
 
 
 <h3> 3.5 Scoring the Model and Understanding the Scoring Metrics </h3>  
@@ -216,6 +247,7 @@ Also, because the data is not balanced (unequal number of observations for value
 Load the required libraries for the analysis
 ```{r load-libraries, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(fastDummies)
 library(kableExtra)
 library(Amelia) # To visualize missing data
 library(cowplot) # To combine plots in a grid
@@ -225,6 +257,7 @@ library(ROSE) # to balance the data
 library(randomForest)
 library(ranger) # for random forest implementation
 library(xgboost)
+library(nnet)
 library(e1071)
 library(caret)
 ```
@@ -515,12 +548,32 @@ Since the data is imbalanced, we preprocess the data to get a balanced dataset a
 data_preprocess_scaling <- function(df){
                       # This helper function standardizes the numeric variables of the df using the standard normal method
                       df <- as.data.frame(df)
-                      df_char <- df %>% select(loan_default, employment_type, perform_cns_score_description) %>%
-                                        mutate(loan_default = factor(loan_default))
+                      df_char <- df %>% select(loan_default, employment_type, perform_cns_score_description) 
                       df_numeric <- df %>% select(-loan_default, -employment_type, -perform_cns_score_description)
                       df_numeric_scaled <- df_numeric %>% mutate_all( ~ (scale(.) %>% as.vector))
                       df_scaled_combined <- cbind(df_char, df_numeric_scaled)
                       return(df_scaled_combined)
+}
+
+
+xgb_preprocess <- function(df, mode){
+ # xgboost only accepts numeric values, so convert the categorical variable to dummies
+              df2 <- dummy_cols(df, select_columns = c("employment_type","perform_cns_score_description"), 
+                                remove_selected_columns = TRUE) %>% as.data.frame()
+              df2_train <- as.data.frame(df2[, -1])
+              df2_label <- as.data.frame(df2[, 1])
+              df_dmatrix <- xgb.DMatrix(as.matrix(sapply(df2_train, as.numeric)), label=as.matrix(df2_label))
+              
+              if(mode == "xgboost"){
+                return(df_dmatrix)
+                
+              } else if(mode == "nnet"){
+                return(df2)
+                
+              } else{
+                print("Mode not supported.")
+              }
+              
 }
 
 
@@ -577,22 +630,6 @@ df = data_preprocessing(vehicle_loan_default_train_cleaned, mode = "train")
 
 <h5>Develop function to train the data </h5> 
 
-```{r}
-#svm_model <- svm(loan_default ~ ., df)
-```
-
-
-```{r}
-#summary(svm_model)
-```
-
-
-```{r}
-#print(svm_model)
-```
-
-
-
 
 ```{r model-training}
 data_training <- function(df, mode = "logistic"){
@@ -614,18 +651,20 @@ data_training <- function(df, mode = "logistic"){
               return(rf_model_ranger)         
           
         } else if(mode == "xgboost"){
-              print("Training an XGBoost  Classification Model...")
-              df <- dummyVars("~.", data = df)
-              xgb_model <- xgboost(data = as.matrix(df), label = loan_default, nthread = 2, nrounds = 2,
-                                   max.depth = 4, eta = 0.2, objective = "binary:logistic")
+              # pre-process the data to obtain the dmatrix
+              df_dmatrix <- xgb_preprocess(df, mode)
+              xgb_model <- xgboost(data = df_dmatrix, nthread = 4, nrounds = 50,
+                                   max.depth = 10, eta = 0.1, objective = "binary:logistic")
               print("XGBoost Training complete")
               return(xgb_model)
           
-        } else if(mode == "svm"){
-              print("Training an SVM  Classification Model...")
-              svm_model <- svm(loan_default ~ . , data = df, kernel = "linear",type = "C-classification")
-              print("SVM Training complete")
-              return(svm_model)
+        } else if(mode == "nnet"){
+              print("Training a Neural Network Classification Model...")
+              df_nnet <- xgb_preprocess(df, mode)
+              nnet_model <- nnet(loan_default ~ ., data = df_nnet, decay = 5e-4, 
+                                 size = 20, maxit = 100, trace = F, set.seed(1994))
+              print("NNET Training complete")
+              return(nnet_model)
           
         } else {
           print("You did not enter a valid mode type: Enter logistic, rf, xgboost or svm")
@@ -636,20 +675,25 @@ data_training <- function(df, mode = "logistic"){
 ```
 
 ```{r}
-model1 <- data_training(df, mode = "rf")
+#model1 <- data_training(df, mode = "xgboost")
 ```
 
 ```{r}
 #print for rf model
-print(model1)
+#print(model1)
 ```
+
+```{r}
+#model_nnet <- data_training(df, mode = "nnet")
+```
+
 
 
 
 <h5> 5.2.2.1 Model Training - Logistic Regression </h5>
 <h5> 5.2.2.2 Model Training - Random Forest </h5>
 <h5> 5.2.2.3 Model Training - XGBoost </h5>
-<h5> 5.2.2.4 Model Training - Support Vector Machines </h5>
+<h5> 5.2.2.4 Model Training - Artificial Neural Networks </h5>
 <h3> 5.3 Testing </h3>
 <h3> 5.4 Results </h3>
 
