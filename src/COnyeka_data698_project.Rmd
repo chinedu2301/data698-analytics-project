@@ -629,7 +629,7 @@ df = data_preprocessing(vehicle_loan_default_train_cleaned, mode = "train")
 ```
 
 <h5>Develop function to train the data </h5> 
-
+ The function `data_training` trains a machine learning model according to the mode selected (logistic, rf, xgboost, or nnet).
 
 ```{r model-training}
 data_training <- function(df, mode = "logistic"){
@@ -638,6 +638,7 @@ data_training <- function(df, mode = "logistic"){
               print("Training a Logistic Regression Model...")
               logistic_model <- glm(formula = loan_default ~ . , 
                                        family = binomial(link = 'logit'), data = df)
+              print("Logistic Regression Model complete")
               return(logistic_model)
            
         } else if(mode == "rf"){
@@ -646,8 +647,11 @@ data_training <- function(df, mode = "logistic"){
                                  formula   = loan_default ~ ., 
                                  data      = df, 
                                  num.trees = 500,
-                                 mtry      = floor(length(df) / 3)
+                                 mtry      = floor(length(df) / 3),
+                                 probability = TRUE,
+                                 classification = TRUE
                                  )
+              print("Random Forest Classification Model complete")
               return(rf_model_ranger)         
           
         } else if(mode == "xgboost"){
@@ -674,27 +678,58 @@ data_training <- function(df, mode = "logistic"){
 }
 ```
 
-```{r}
-#model1 <- data_training(df, mode = "xgboost")
+
+<h5> 5.2.2.1 Model Training - Logistic Regression </h5>  
+Train the logistic model
+
+```{r logistic-model}
+logistic_model <- data_training(df, mode = "logistic")
 ```
 
-```{r}
-#print for rf model
-#print(model1)
-```
-
-```{r}
-#model_nnet <- data_training(df, mode = "nnet")
+Display the model
+```{r display-logistic}
+logistic_model
 ```
 
 
+<h5> 5.2.2.2 Model Training - Random Forest </h5>  
+Train a random forest model for the data
+```{r random-forest-model}
+rf_model <- data_training(df, mode = "rf")
+```
+
+Display the random forest model
+```{r}
+rf_model
+```
 
 
-<h5> 5.2.2.1 Model Training - Logistic Regression </h5>
-<h5> 5.2.2.2 Model Training - Random Forest </h5>
-<h5> 5.2.2.3 Model Training - XGBoost </h5>
+<h5> 5.2.2.3 Model Training - XGBoost </h5>  
+Train an XGBoost model for the data
+```{r xgb-model}
+xgb_model <- data_training(df, mode = "xgboost")
+```
+
+Display the model
+```{r display-xgb-model}
+xgb_model
+```
+
+
 <h5> 5.2.2.4 Model Training - Artificial Neural Networks </h5>
+Train a Neural Network model for the data
+```{r nnet-model}
+nnet_model <- data_training(df, mode = "nnet")
+```
+
+Display the model
+```{r display-nnet-model}
+nnet_model
+```
+
 <h3> 5.3 Testing </h3>
+
+
 <h3> 5.4 Results </h3>
 
 
