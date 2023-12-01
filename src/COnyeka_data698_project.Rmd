@@ -90,15 +90,10 @@ This is a boosting technique that builds trees sequentially. It fits each tree t
 <h4> 3.3.2 XGBoost (Extreme Gradient Boosting) </h4>  
 It is an optimized and highly efficient implementation of gradient boosting. XGBoost improves upon the traditional gradient boosting method by introducing regularization, parallel computing, and a variety of enhancements that significantly speed up the training process and improve accuracy.
 
-<h3> 3.4 Support Vector Machines </h3>  
-Support Vector Machines (SVM) are powerful supervised learning models used for both classification and regression tasks. The primary goal of SVM is to find the optimal hyperplane that best separates data points into different classes. SVM works by finding the hyperplane that maximizes the margin between different classes in a dataset. This hyperplane is the one that creates the largest gap between the closest data points of different classes, also known as support vectors. SVM can handle non-linear data by mapping the input data into a higher-dimensional space using a kernel function (e.g., polynomial, radial basis function), where a linear separation is then performed.  
-The objective of SVM is to maximize the margin between classes while minimizing classification errors. It aims to generalize well on unseen data by finding the optimal decision boundary. In SVM, the regularization parameter (C) controls the trade-off between maximizing the margin and minimizing the classification error. A higher C value allows more points to be classified correctly but might lead to overfitting. They are originally designed for binary classification, but can be extended to handle multi-class problems using various strategies like one-vs-one or one-vs-rest.  
-The downside of SVM is that training an SVM on a large dataset can be computationally expensive, especially when using non-linear kernels or dealing with a high number of features. Also, Selecting an appropriate kernel and tuning its parameters can be challenging. It requires domain knowledge and often involves some trial and error. In addition, SVM can be sensitive to noise in the data, which might result in overfitting, especially if the margin is overly optimized.  
-
 <h3> 3.4 Neural Networks </h3>  
 Artificial Neural Networks (ANNs) are a class of machine learning models inspired by the structure and function of the human brain. They consist of interconnected nodes, known as neurons, organized in layers to process and learn from data.  
 
-<b>Structure of ANNs </b>  
+<h5>Structure of ANNs </h5>  
 <li><b>Neurons(Nodes):</b> Neurons are the basic units in an ANN. Each neuron receives input signals, performs computations, and produces an output signal that is transmitted to other neurons in the network. </li> 
 <li><b>Layers: </b> ANNs typically consist of three types of layers:  
 *Input Layer:* Receives input data and passes it to the next layer.  
@@ -106,23 +101,23 @@ Artificial Neural Networks (ANNs) are a class of machine learning models inspire
 *Output Layer:* Produces the final output or prediction based on the learned representations from the hidden layers. </li>
 <li><b>Connections (Weights):</b> Neurons are connected to neurons in adjacent layers by weighted connections. These weights are adjusted during the learning process to optimize the network's performance.  </li>
 
-<b>Training Process</b>  
+<h5>Training Process</h5>  
 <li><b>Forward Propagation:</b> Input data is passed through the network, and computations are performed layer by layer, generating an output. </li>
 <li><b>Loss Calculation:</b> The output is compared to the actual target, and a loss function measures the difference between the predicted and actual values. </li> 
 <li><b>Backpropagation:</b> The algorithm calculates gradients of the loss function with respect to the weights of the network using chain rule and propagates this information backward through the network. </li>  
 <li><b>Weight Update:</b> The weights are adjusted using optimization algorithms (e.g., gradient descent) to minimize the loss function, making the predictions closer to the actual values.  </li>
 
-<b>Types of ANNs</b>  
+<h5>Types of ANNs</h5>  
 <li><b>Feedforward Neural Networks (FNN):</b> The most basic type where information flows in one direction—from input to output without cycles. This is the type used in this project.</li>
 <li><b>Recurrent Neural Networks (RNN):</b> Networks that allow feedback loops, enabling them to process sequential data by retaining memory of previous inputs.</li>  
 <li><b>Convolutional Neural Networks (CNN):</b> Specialized for processing grid-like data, such as images. They use convolutional layers to learn features hierarchically.  </li>
 
-<b>Applications</b>
+<h5>Applications</h5>  
 *Image and Speech Recognition:* CNNs are widely used in image classification, object detection, and speech recognition.  
 *Natural Language Processing (NLP):* RNNs and variants like LSTM and GRU are used for text analysis, language translation, and sentiment analysis.  
 *Predictive Modeling:* ANNs are applied in various predictive tasks, including regression, classification, and time-series forecasting.  
 
-<b>Challenges</b>
+<h5>Challenges</h5>
 *Computational Complexity:* Training large ANNs can be computationally intensive and require significant resources.  
 *Overfitting:* ANNs, especially with complex architectures, can overfit the training data if not properly regularized or trained on diverse data.  
 
@@ -254,12 +249,13 @@ library(cowplot) # To combine plots in a grid
 library(corrplot) # To plot correlation plot
 library(ggcorrplot) # To plot correlation plot
 library(ROSE) # to balance the data
-library(randomForest)
+library(caTools)
 library(ranger) # for random forest implementation
 library(xgboost)
 library(nnet)
-library(e1071)
 library(caret)
+library(Metrics)
+library(pROC)
 ```
 
 Read the datasets into memory from the github location.
@@ -540,7 +536,7 @@ correlation_plot
 
 <br>
 
-<h4> 5.2.2 Model Training </h4>
+<h4> 5.2.2 Model Training and Testing </h4>
 <h5>Preprocess the data</h5> 
 Since the data is imbalanced, we preprocess the data to get a balanced dataset and also standardize the numeric variables in the data using the standard normal distribution.
 
@@ -556,10 +552,11 @@ data_preprocess_scaling <- function(df){
 }
 
 
-xgb_preprocess <- function(df, mode){
- # xgboost only accepts numeric values, so convert the categorical variable to dummies
+xgb_nnet_preprocess <- function(df, mode){
+ # convert the categorical variable to dummies
               df2 <- dummy_cols(df, select_columns = c("employment_type","perform_cns_score_description"), 
                                 remove_selected_columns = TRUE) %>% as.data.frame()
+              # prepare the xgb.DMatrix to use in the xgboost training
               df2_train <- as.data.frame(df2[, -1])
               df2_label <- as.data.frame(df2[, 1])
               df_dmatrix <- xgb.DMatrix(as.matrix(sapply(df2_train, as.numeric)), label=as.matrix(df2_label))
@@ -624,15 +621,37 @@ data_preprocessing <- function(df, mode = "train"){
 }
 ```
 
-```{r preprocess-data}
-df = data_preprocessing(vehicle_loan_default_train_cleaned, mode = "train")
+<h5>Train Test Split </h5> 
+Use the CaTools library to split the cleaned dataset into training and testing datasets in 70:30 ratio.
+```{r train-test-split}
+# Set a seed
+set.seed(1994)
+#Split the sample
+sampling <- sample.split(vehicle_loan_default_train_cleaned$loan_default, SplitRatio = 0.7) 
+# Training Data
+df_train_subset <- subset(vehicle_loan_default_train_cleaned, sampling == TRUE)
+# Testing Data
+df_test_subset <- subset(vehicle_loan_default_train_cleaned, sampling == FALSE)
 ```
 
-<h5>Develop function to train the data </h5> 
- The function `data_training` trains a machine learning model according to the mode selected (logistic, rf, xgboost, or nnet).
 
-```{r model-training}
-data_training <- function(df, mode = "logistic"){
+Pre-process the train data
+```{r preprocess-data}
+df_train = data_preprocessing(df_train_subset, mode = "train")
+```
+
+Pre-process the test data
+```{r}
+df_test = data_preprocessing(df_test_subset, mode = "test")
+```
+
+
+
+<h5>Develop function to train the data </h5> 
+ The function `model_training` trains a machine learning model according to the mode selected (logistic, rf, xgboost, or nnet).
+
+```{r define-model-training-function}
+model_training <- function(df, mode = "logistic"){
   
           if(mode == "logistic"){
               print("Training a Logistic Regression Model...")
@@ -656,7 +675,7 @@ data_training <- function(df, mode = "logistic"){
           
         } else if(mode == "xgboost"){
               # pre-process the data to obtain the dmatrix
-              df_dmatrix <- xgb_preprocess(df, mode)
+              df_dmatrix <- xgb_nnet_preprocess(df, mode)
               xgb_model <- xgboost(data = df_dmatrix, nthread = 4, nrounds = 50,
                                    max.depth = 10, eta = 0.1, objective = "binary:logistic")
               print("XGBoost Training complete")
@@ -664,7 +683,7 @@ data_training <- function(df, mode = "logistic"){
           
         } else if(mode == "nnet"){
               print("Training a Neural Network Classification Model...")
-              df_nnet <- xgb_preprocess(df, mode)
+              df_nnet <- xgb_nnet_preprocess(df, mode)
               nnet_model <- nnet(loan_default ~ ., data = df_nnet, decay = 5e-4, 
                                  size = 20, maxit = 100, trace = F, set.seed(1994))
               print("NNET Training complete")
@@ -678,59 +697,204 @@ data_training <- function(df, mode = "logistic"){
 }
 ```
 
+<h5>Develop function to predict data </h5> 
+The function `model_predictions` predicts the loan_default probability of new data for each of the model types.  
 
-<h5> 5.2.2.1 Model Training - Logistic Regression </h5>  
+```{r define-model-predictions-function}
+model_prediction = function(df, trained_model, model_type){
+  
+  # remove the response variable from the dataframe if it exists
+  if("loan_default" %in% colnames(df)){
+    test_data = df %>% select(-loan_default)
+  } else {
+    test_data = df
+  }
+  
+  # make predictions
+  if(model_type == "rf"){
+    predictions = predict(trained_model, data = test_data)$predictions
+  } else if (model_type == "logistic"){
+    predictions = predict(trained_model, newdata = test_data, type = "response")
+  }  else if (model_type == "xgboost"){
+    test_data_xgb = xgb_nnet_preprocess(df, model_type)
+    predictions = predict(trained_model, newdata = test_data_xgb)
+  } else{
+    test_data_nnet = xgb_nnet_preprocess(test_data, model_type)
+    predictions = predict(trained_model, newdata = test_data_nnet)
+  }
+  
+  # convert probabilities to classes
+  predicted = ifelse(predictions > 0.48, 1, 0)
+  
+  return(predicted)
+}
+```
+
+<h5>Develop function to evaluate metrics of the model </h5> 
+The function `model_evaluations` provides metrics such as accuracy, recall, precision, f1-score, and AUC for the model.
+
+```{r define-model-metrics-function}
+model_metrics = function(actual, predicted){
+  
+  # accuracy
+  accuracy_model = round((Metrics::accuracy(actual, predicted)), 4)
+  # precision
+  precision_model = round((Metrics::precision(predicted, actual)), 4)
+  # recall 
+  recall_model = round((Metrics::recall(predicted, actual)), 4)
+  # auc
+  auc_model = round((pROC::auc(actual, predicted)), 4)
+  
+  # model metrics
+  model_eval_metrics = c(accuracy_model, precision_model, recall_model, auc_model) %>% t()
+  column_names = c("Accuracy", "Precision", "Recall", "AUC")
+  evaluation_metrics = data.frame(values = model_eval_metrics)
+  colnames(evaluation_metrics) = column_names
+  
+  # confusion Matrix
+  confusion_table = table(predicted, actual)
+  confusion_matrix = caret::confusionMatrix(confusion_table)
+  print("************************************************************************************************")
+  print(confusion_matrix)
+  print("************************************************************************************************")
+  
+  return(evaluation_metrics)
+}
+```
+
+
+
+<h5> 5.2.2.1 Model Training  and Testing - Logistic Regression </h5>  
 Train the logistic model
 
-```{r logistic-model}
-logistic_model <- data_training(df, mode = "logistic")
+```{r train-logistic-model}
+logistic_model <- model_training(df_train, mode = "logistic")
 ```
 
 Display the model
 ```{r display-logistic}
 logistic_model
 ```
+Evaluate the Model  
+```{r}
+# Train Metrics
+logistic_train_actual = df_train$loan_default
+logistic_train_predicted = model_prediction(df_train, logistic_model, "logistic")
+logistic_train_model_metrics = model_metrics(logistic_train_actual, logistic_train_predicted)
+```
+```{r}
+logistic_train_model_metrics
+```
 
 
-<h5> 5.2.2.2 Model Training - Random Forest </h5>  
+
+```{r evaluate-logistic-model, warning=FALSE, message=FALSE}
+logistic_actual = df_test$loan_default
+logistic_predicted = model_prediction(df_test, logistic_model, "logistic")
+logistic_model_metrics = model_metrics(logistic_actual, logistic_predicted)
+```
+
+```{r display-logistic-metrics}
+rownames(logistic_model_metrics) = "Logistic Model"
+logistic_model_metrics 
+```
+
+
+
+
+<h5> 5.2.2.2 Model Training and Testing - Random Forest </h5>  
 Train a random forest model for the data
-```{r random-forest-model}
-rf_model <- data_training(df, mode = "rf")
+```{r train-random-forest-model}
+rf_model <- model_training(df_train, mode = "rf")
 ```
 
 Display the random forest model
-```{r}
+```{r display-rf-model}
 rf_model
 ```
 
+Evaluate the Model  
+```{r evaluate-rf-model, warning=FALSE, message=FALSE}
+rf_actual = df_test$loan_default
+rf_predicted = model_prediction(df_test, rf_model, "rf")
+rf_accuracy = accuracy(rf_actual, rf_predicted)
+rf_accuracy
+#rf_model_metrics = model_metrics(rf_actual, rf_predicted)
+```
 
-<h5> 5.2.2.3 Model Training - XGBoost </h5>  
+
+```{r display-rf-metrics}
+#auc(rf_actual, rf_predicted)
+```
+
+
+
+<h5> 5.2.2.3 Model Training and Testing - XGBoost </h5>  
 Train an XGBoost model for the data
-```{r xgb-model}
-xgb_model <- data_training(df, mode = "xgboost")
+```{r train-xgb-model, warning=FALSE, message=FALSE}
+xgb_model <- model_training(df_train, mode = "xgboost")
 ```
 
 Display the model
 ```{r display-xgb-model}
 xgb_model
 ```
+Evaluate the Model  
+```{r evaluate-xgb-model, warning=FALSE, message=FALSE}
+xgb_actual = df_test$loan_default
+xgb_predicted = model_prediction(df_test, xgb_model, "xgboost")
+xgb_model_metrics = model_metrics(xgb_actual, xgb_predicted)
+```
+```{r display-xgb-metrics}
+rownames(xgb_model_metrics) = "XGBoost"
+xgb_model_metrics
+```
 
-
-<h5> 5.2.2.4 Model Training - Artificial Neural Networks </h5>
+<h5> 5.2.2.4 Model Training and Testing - Artificial Neural Networks </h5>
 Train a Neural Network model for the data
-```{r nnet-model}
-nnet_model <- data_training(df, mode = "nnet")
+```{r train-nnet-model}
+nnet_model <- model_training(df_train, mode = "nnet")
 ```
 
 Display the model
 ```{r display-nnet-model}
 nnet_model
 ```
+Evaluate the Model  
+```{r evaluate-nnet-model, warning=FALSE, message=FALSE}
+nnet_actual = df_test$loan_default
+nnet_predicted = model_prediction(df_test, nnet_model, "nnet")
+nnet_model_metrics = model_metrics(nnet_actual, nnet_predicted)
+```
+```{r display-nnet-metrics}
+rownames(nnet_model_metrics) = "Neural Network"
+nnet_model_metrics
+```
 
-<h3> 5.3 Testing </h3>
 
 
-<h3> 5.4 Results </h3>
+
+```{r clean-test-data}
+# add the loan_default column to the test data so that it can be cleaned and preprocessed. drop the column later
+test_data_raw <- vehicle_loan_default_test_raw %>% mutate(loan_default = 0)
+# Clean the test data
+cleaned_test_data = data_cleaning(test_data_raw)
+# Preprocess the test data
+preprocessed_test_data = data_preprocessing(cleaned_test_data, mode = "test")
+```
+```{r}
+head(preprocessed_test_data)
+```
+
+
+<h3> 5.3 Results </h3>
+
+```{r}
+results = rbind(logistic_model_metrics, xgb_model_metrics, nnet_model_metrics)
+kable(results, "html") %>%
+                        kable_paper("hover", full_width = F) %>%
+                        scroll_box(width = "700px", height = "300px")
+```
 
 
 </br>
