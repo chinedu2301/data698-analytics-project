@@ -671,7 +671,7 @@ data_preprocessing <- function(df, mode = "train"){
           # The ovun.sample function in the ROSE package assumes the data to be in the global env so you have to tell it  
           # which frame (scope) to find the data else this will fail if executed inside a function.
           df_ovun <- ovun.sample(formula = formula(loan_default ~ .), data = get("df", sys.frame(curr_frame)),
-                                 p = 0.5, seed = 1994, method = "both")$data %>% as.data.frame() %>% as_tibble()
+                                 N = 1.5 * nrow(data), seed = 1994, method = "both")$data %>% as.data.frame() %>% as_tibble()
           print("Oversampling and undersampling completed")
           df_scaled <- data_preprocess_scaling(df_ovun)
           print("Data Pre-processing complete!")
@@ -750,6 +750,7 @@ model_training <- function(df, mode = "logistic"){
                                  num.trees = 500,
                                  mtry      = floor(length(df) / 3),
                                  probability = TRUE,
+                                 verbose = FALSE,
                                  classification = TRUE
                                  )
               print("Random Forest Classification Model complete")
@@ -759,8 +760,8 @@ model_training <- function(df, mode = "logistic"){
               print("Training an XGBoost Classification Model...")
               # pre-process the data to obtain the dmatrix
               df_dmatrix <- xgb_nnet_preprocess(df, mode)
-              xgb_model <- xgboost(data = df_dmatrix, nthread = 4, nrounds = 50,
-                                   max.depth = 10, eta = 0.1, objective = "binary:logistic")
+              xgb_model <- xgboost(data = df_dmatrix, nthread = 4, nrounds = 150,
+                                   max.depth = 10, eta = 0.1, objective = "binary:logistic", verbose = FALSE)
               print("XGBoost Training complete")
               return(xgb_model)
           
@@ -796,7 +797,7 @@ model_prediction = function(df, trained_model, model_type){
   
   # make predictions
   if(model_type == "rf"){
-    predictions = predict(trained_model, data = test_data)$predictions
+    predictions = predict(trained_model, data = test_data)$predictions[,1]
   } else if (model_type == "logistic"){
     predictions = predict(trained_model, newdata = test_data, type = "response")
   }  else if (model_type == "xgboost"){
@@ -808,7 +809,7 @@ model_prediction = function(df, trained_model, model_type){
   }
   
   # convert probabilities to classes
-  predicted = ifelse(predictions > 0.48, 1, 0)
+  predicted = ifelse(predictions > 0.5, 1, 0)
   
   return(predicted)
 }
@@ -823,9 +824,9 @@ model_metrics = function(actual, predicted){
   # accuracy
   accuracy_model = round((Metrics::accuracy(actual, predicted)), 4)
   # precision
-  precision_model = round((Metrics::precision(predicted, actual)), 4)
+  precision_model = round((Metrics::precision(actual, predicted)), 4)
   # recall 
-  recall_model = round((Metrics::recall(predicted, actual)), 4)
+  recall_model = round((Metrics::recall(actual, predicted)), 4)
   # auc
   auc_model = round((pROC::auc(actual, predicted)), 4)
   
@@ -881,15 +882,13 @@ rf_model <- model_training(df_train, mode = "rf")
 rf_actual = df_test$loan_default
 rf_predicted = model_prediction(df_test, rf_model, "rf")
 rf_accuracy = accuracy(rf_actual, rf_predicted)
-rf_accuracy
-#rf_model_metrics = model_metrics(rf_actual, rf_predicted)
+rf_model_metrics = model_metrics(rf_actual, rf_predicted)
 ```
-
 
 ```{r display-rf-metrics}
-#auc(rf_actual, rf_predicted)
+rownames(rf_model_metrics) = "Random Forest Model"
+rf_model_metrics 
 ```
-
 
 
 <h5> 5.2.2.3 Model Training and Testing - XGBoost </h5>  
@@ -929,11 +928,19 @@ nnet_model_metrics
 <h3> 5.3 Results </h3>
 
 ```{r combine-results}
-results = rbind(logistic_model_metrics, xgb_model_metrics, nnet_model_metrics)
+results = rbind(logistic_model_metrics, rf_model_metrics, xgb_model_metrics, nnet_model_metrics)
 kable(results, "html") %>%
                         kable_paper("hover", full_width = F) %>%
                         scroll_box(width = "700px", height = "300px")
 ```
+<h3> 5.4 Limitations of the model and data </h3>
+```{r}
+
+```
+
+
+<h3> 5.5 Next Steps </h3>  
+
 
 </br>
 
