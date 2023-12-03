@@ -179,7 +179,7 @@ There are different ways to decrease underfitting such are:
 
 <center> <h2> 4. METHODOLOGY </h2> </center> 
 <h3> 4.1 Dataset </h3>   
-The data used in this analysis was obtained from [Kaggle](https://www.kaggle.com/datasets/avikpaul4u/vehicle-loan-default-prediction/data). The csv files containing the data was downloaded from kaggle and placed in [github](https://github.com/chinedu2301/data698-analytics-project/tree/main/data). There are three files which are: train dataset, test dataset, and dictionary. The dictionary file explains what the variables represent.  
+The data used in this analysis was obtained from [Kaggle](https://www.kaggle.com/datasets/avikpaul4u/vehicle-loan-default-prediction/data). The csv files containing the data was downloaded from kaggle and placed in [github](https://github.com/chinedu2301/data698-analytics-project/tree/main/data). There are three files which are: train dataset, test dataset, and dictionary. The dictionary file explains what the variables represent. Unfortunately, the test dataset does not contain labels (i.e the response variable) and could not be used to evaluate how well the model does because to do that, you need to have labels to compare to the predicted values. Hence, After, cleaning of the data, the train data was split using the `CaTools` package into training `(df_train)` and testing data `(df_test)` 
 
 <h5>Variables</h5>  
 There are about 41 variables in the dataset. forty (40) of the variables are predictor variables while there is one response variable. The variables in the dataset are:  
@@ -224,14 +224,97 @@ There are about 41 variables in the dataset. forty (40) of the variables are pre
 <li> <b>CREDIT.HISTORY.LENGTH</b>: Time since first loan</li>
 <li> <b>NO.OF_INQUIRIES</b>: Enquiries done by the customer for loans</li>  
 Note: Primary accounts are those which the customer has taken for his personal use while secondary accounts are those which the customer act as a co-applicant or guarantor.  
-The response variable is the <b>loan_default</b> variable and it is a two level categorical variable with a value of 1 fir default and value 0 for no default.
+The response variable is the <b>loan_default</b> variable and it is a two level categorical variable with a value of 1 fir default and value 0 for no default.  
+
+<h3> 4.2 Methodology </h3>  
+The method adopted in this analysis follows a certain number of steps and code re-use was essential to avoid errors resulting from code duplication. To perform this analysis, the following steps were taken in R studio:  
+
+<li>
+<b>Read Data:</b> The data was read into memory from the external location and view a few records.
+</li>  
+
+<li>
+<b>Clean Data:</b> The data was cleaned using the `data_cleaning` function developed in this analysis.
+</li> 
+
+<li>
+<b>Explore Data:</b> The data was explored. It was determined that there are about 41 variables (40 predictors and 1 response variable). Also, there were over 230,000 observations and the data was found to be unbalanced after visualizing the two level categorical response variable `loan_default` in a bar chart. Further exploratory data analysis was done to better understand the data.
+</li>  
+
+<li>
+<b>Pre-Process Data:</b> The data was pre-processed using the `data_preprocessing` function also developed in this analysis.
+</li>  
+
+<li>
+<b>Train Test Split:</b> Split the data into training and test data.
+</li>  
+
+<li>
+<b>Model Training:</b> After cleaning, and pre-processing, the train data was used to train four (4) different machine learning models: Logistic, Random Forests, XGBoost, and Neural Network models. These training were done using the `model_training` function developed as part of this analysis as well.
+</li> 
+
+<li>
+<b>Model Prediction and Evaluation:</b> After training the data and getting a trained model, predictions were made and results of the prediction were compared to the labels in the data to determine how well the model performs using four different metrics: Accuracy, Precision, Recall, and AUC.
+</li>  
+
+<li>
+<b>Results:</b> The results of the model evaluations were compared to determine the best performing model.
+</li>  
+
+<li>
+<b>Next Steps and Conclusion: </b> Based on the results of the evaluation metrics and other findings during the analysis, next steps recommendations were made and a conclusion provided on the project findings.
+</li>   
+Further details about the functions used in the analysis are provided in the sections below:  
+
+<h3> 4.3 Data Cleaning and Pre-processing Details </h3>  
+To clean and pre-process the data, two major functions `data_training` and `data_preprocessing` were developed respectively to avoid code duplication and errors such that new data can simply be passed into those functions to be cleaned, preprocessed and ready for either training or testing.  
+
+<h4>4.3.1 data_cleaning:</h4>  
+This function basically cleans the data. It accepts an R dataframe or a tibble with fixed schema and does the following cleaning:  
+<li>
+It starts by removing the 'period' in the column names and then converting all the names to snake case (lower) format.  
+</li>
+
+<li> 
+Derived the age of applicants by subtracting the date of birth from the date of disbursement and rounded to the nearest whole number after both dates have been converted to date from their string formats.  
+</li>
+
+<li>
+Normalized the average_account_age by combining their year and month components and round the result to the nearest year.  
+</li>
+
+<li>
+Normalized the average_credit_history by combining their year and month components and round the result to the nearest year. 
+</li>
+
+<li>
+Cleaned up the perform_cns_score_description into meaningful risk categories.  
+</li>
+
+<li>
+Cleaned up the employment_type of applicant into self_employed, employed, and not_reported.
+</li>
+
+<li>
+Finally, it selects the relevant columns that will be used further in the analysis and returns the cleaned data as an R dataframe.  
+</li>
+
+<h4>4.3.2 data_preprocessing:</h4>  
+This function pre-processes the data for either training or testing purposes. It expects the cleaned data from the data_cleaning function and a mode to specify whether the data will be used for training or testing. It has a further helper function `data_preprocess_scaling` that uses the standard-scaler method to scale the data. For testing data, mode is passed as 'test' and the function basically calls the helper function to scale the data and returned the scaled data that can then be used for testing purposes while for training data,mode is passes as 'train' the function uses the ROSE package in R to do oversampling/under-sampling to balance the class of data in this binary classification problem after which it calls the helper function to standardize/scale the balanced data.  
+
+<h4>4.3.3 model_training:</h4>  
+This function does the model training of any of the four (4) models. It expects a pre-processed dataframe and mode of training. It has a further helper function `xgb_nnet_preprocess` that does further preprocessing for XGB, and Neural Network models. For the XGB model, the train function expects a certain DMatrix which can only be numeric values and in that case, the model_training function calls this helper function which converts the non-numeric predictor variables to dummies, and converts the dataframe into a DMatrix format that can be used to train the data using the XGB algorithm. Also, for the NNET model, the helper function only dummifies the non-numeric predictor variables.  
+For models that need further pre-processing, the function calls the appropriate helper function to do that and then trains the model using the data and type of model provided to return a train model.  
+
+<h4>4.3.4 model_prediction:</h4>  
+This behaves similarly like the model_training function although it does so for predictions. It expects three parameters - data, trained_model, and model_type. Depending on the type of the model, it determines if the data needs further pre-processing like in the case of XGB and NNET models whereby it calls the same helper function `xgb_nnet_preprocess` to return the same format of data it gave to the training model as that is what would be needed to make predictions. The predictions returned are probabilities of belonging to a certain class (Class 0). However, this function goes further to convert these probabilities to classes using a given threshold which can always be adjusted based on business needs.  
+
+<h4>4.3.5 model_evaluation:</h4>  
+After training of a model and using the model to make predictions, it is very important to determine if the predictions of the model can be useful or taken seriously. Hence, we evaluate the model and this function does the evaluation of the model. It calculates the accuracy, precision, recall, and auc for any model once the actual and predicted values are provided. It relies heavily on the `Metrics` package in R for the evaluations except for auc where it uses the pROC package.  
 
 
-<h3> 4.2 Data Cleaning and Pre-processing </h3> 
-The data cleaning and pre-processing aspect of the analysis mainly involved creating derived field such as the age of the loan applicant, renaming the columns to standardize the naming conventions, adjusting the datatype of the columns, and selecting columns that would be used in the modeling/training of the data. 
-The train and test dataset are already separate to start with and since the test data will be used in testing the results of the model, it too would need to be cleaned and pre-processed. To avoid extra work and errors, the functional approach has been adopted. The analysis is broken down into different sections and a single R-function is responsible for each section of the analysis. The sections are: data cleaning and pre-processing; modeling/training; and testing. Hence, there are 3 R functions: data_cleaning_preprocess; modeling_training; and predict_testing that handle each sections respectively. That way, when it is time to analyze new data, the new data is simply passed into those set of functions to achieve the desired results. Although, there is a section for exploratory data analysis, there is no function that does this.
-Also, because the data is not balanced (unequal number of observations for values 1 and 0 for the response variable), the dataset was enhanced to ensure equality of the two levels to prevent the model from correctly predicting one class better 
- 
+Note: Although, there is a section for exploratory data analysis, there is no function that does this.
+</br>  
 
 * * *  
 
@@ -241,21 +324,21 @@ Also, because the data is not balanced (unequal number of observations for value
 **Libraries**  
 Load the required libraries for the analysis
 ```{r load-libraries, warning=FALSE, message=FALSE}
-library(tidyverse)
-library(fastDummies)
-library(kableExtra)
 library(Amelia) # To visualize missing data
-library(cowplot) # To combine plots in a grid
-library(corrplot) # To plot correlation plot
-library(ggcorrplot) # To plot correlation plot
-library(ROSE) # to balance the data
-library(caTools)
-library(ranger) # for random forest implementation
-library(xgboost)
-library(nnet)
 library(caret)
-library(Metrics)
+library(caTools)
+library(corrplot) # To plot correlation plot
+library(cowplot) # To combine plots in a grid
+library(fastDummies) # to convert character variables to dummies
+library(ggcorrplot) # To plot correlation plot
+library(kableExtra)
+library(Metrics) # for model evaluation
+library(nnet)
 library(pROC)
+library(ranger) # for random forest implementation
+library(ROSE) # to balance the data
+library(tidyverse)
+library(xgboost)
 ```
 
 Read the datasets into memory from the github location.
@@ -536,7 +619,7 @@ correlation_plot
 
 <br>
 
-<h4> 5.2.2 Model Training and Testing </h4>
+<h4> 5.2.2 Data Pre-processing, Model Training, and Testing </h4>
 <h5>Preprocess the data</h5> 
 Since the data is imbalanced, we preprocess the data to get a balanced dataset and also standardize the numeric variables in the data using the standard normal distribution.
 
@@ -646,7 +729,6 @@ df_test = data_preprocessing(df_test_subset, mode = "test")
 ```
 
 
-
 <h5>Develop function to train the data </h5> 
  The function `model_training` trains a machine learning model according to the mode selected (logistic, rf, xgboost, or nnet).
 
@@ -674,6 +756,7 @@ model_training <- function(df, mode = "logistic"){
               return(rf_model_ranger)         
           
         } else if(mode == "xgboost"){
+              print("Training an XGBoost Classification Model...")
               # pre-process the data to obtain the dmatrix
               df_dmatrix <- xgb_nnet_preprocess(df, mode)
               xgb_model <- xgboost(data = df_dmatrix, nthread = 4, nrounds = 50,
@@ -683,6 +766,7 @@ model_training <- function(df, mode = "logistic"){
           
         } else if(mode == "nnet"){
               print("Training a Neural Network Classification Model...")
+              # pre-process the model to convert character variables to dummies
               df_nnet <- xgb_nnet_preprocess(df, mode)
               nnet_model <- nnet(loan_default ~ ., data = df_nnet, decay = 5e-4, 
                                  size = 20, maxit = 100, trace = F, set.seed(1994))
@@ -754,9 +838,9 @@ model_metrics = function(actual, predicted){
   # confusion Matrix
   confusion_table = table(predicted, actual)
   confusion_matrix = caret::confusionMatrix(confusion_table)
-  print("************************************************************************************************")
+  print("**********************************************************************")
   print(confusion_matrix)
-  print("************************************************************************************************")
+  print("**********************************************************************")
   
   return(evaluation_metrics)
 }
@@ -765,29 +849,14 @@ model_metrics = function(actual, predicted){
 
 
 <h5> 5.2.2.1 Model Training  and Testing - Logistic Regression </h5>  
-Train the logistic model
+**Train the logistic model**
 
 ```{r train-logistic-model}
 logistic_model <- model_training(df_train, mode = "logistic")
 ```
 
-Display the model
-```{r display-logistic}
-logistic_model
-```
-Evaluate the Model  
-```{r}
-# Train Metrics
-logistic_train_actual = df_train$loan_default
-logistic_train_predicted = model_prediction(df_train, logistic_model, "logistic")
-logistic_train_model_metrics = model_metrics(logistic_train_actual, logistic_train_predicted)
-```
-```{r}
-logistic_train_model_metrics
-```
 
-
-
+**Evaluate the logistic Model**  
 ```{r evaluate-logistic-model, warning=FALSE, message=FALSE}
 logistic_actual = df_test$loan_default
 logistic_predicted = model_prediction(df_test, logistic_model, "logistic")
@@ -801,19 +870,13 @@ logistic_model_metrics
 
 
 
-
 <h5> 5.2.2.2 Model Training and Testing - Random Forest </h5>  
-Train a random forest model for the data
+**Train a random forest model for the data**
 ```{r train-random-forest-model}
 rf_model <- model_training(df_train, mode = "rf")
 ```
 
-Display the random forest model
-```{r display-rf-model}
-rf_model
-```
-
-Evaluate the Model  
+**Evaluate the Random Forest Model**  
 ```{r evaluate-rf-model, warning=FALSE, message=FALSE}
 rf_actual = df_test$loan_default
 rf_predicted = model_prediction(df_test, rf_model, "rf")
@@ -830,16 +893,12 @@ rf_accuracy
 
 
 <h5> 5.2.2.3 Model Training and Testing - XGBoost </h5>  
-Train an XGBoost model for the data
+**Train an XGBoost model for the data**
 ```{r train-xgb-model, warning=FALSE, message=FALSE}
 xgb_model <- model_training(df_train, mode = "xgboost")
 ```
 
-Display the model
-```{r display-xgb-model}
-xgb_model
-```
-Evaluate the Model  
+**Evaluate the XGBoost Model**  
 ```{r evaluate-xgb-model, warning=FALSE, message=FALSE}
 xgb_actual = df_test$loan_default
 xgb_predicted = model_prediction(df_test, xgb_model, "xgboost")
@@ -851,16 +910,12 @@ xgb_model_metrics
 ```
 
 <h5> 5.2.2.4 Model Training and Testing - Artificial Neural Networks </h5>
-Train a Neural Network model for the data
+**Train a Neural Network model for the data**
 ```{r train-nnet-model}
 nnet_model <- model_training(df_train, mode = "nnet")
 ```
 
-Display the model
-```{r display-nnet-model}
-nnet_model
-```
-Evaluate the Model  
+**Evaluate the NNET Model**  
 ```{r evaluate-nnet-model, warning=FALSE, message=FALSE}
 nnet_actual = df_test$loan_default
 nnet_predicted = model_prediction(df_test, nnet_model, "nnet")
@@ -871,31 +926,14 @@ rownames(nnet_model_metrics) = "Neural Network"
 nnet_model_metrics
 ```
 
-
-
-
-```{r clean-test-data}
-# add the loan_default column to the test data so that it can be cleaned and preprocessed. drop the column later
-test_data_raw <- vehicle_loan_default_test_raw %>% mutate(loan_default = 0)
-# Clean the test data
-cleaned_test_data = data_cleaning(test_data_raw)
-# Preprocess the test data
-preprocessed_test_data = data_preprocessing(cleaned_test_data, mode = "test")
-```
-```{r}
-head(preprocessed_test_data)
-```
-
-
 <h3> 5.3 Results </h3>
 
-```{r}
+```{r combine-results}
 results = rbind(logistic_model_metrics, xgb_model_metrics, nnet_model_metrics)
 kable(results, "html") %>%
                         kable_paper("hover", full_width = F) %>%
                         scroll_box(width = "700px", height = "300px")
 ```
-
 
 </br>
 
