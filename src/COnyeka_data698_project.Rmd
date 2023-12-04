@@ -1,7 +1,7 @@
 ---
 title: "DATA698 Project - Vehicle Loan Default Prediction"
 author: "Chinedu Onyeka"
-date: "12/03/2023"
+date: "12/10/2023"
 output:
   html_document:
     includes:
@@ -23,12 +23,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 <center> <h2> 0. ABSTRACT </h2> </center>  
-This project aims to predict the default of auto-loans using Machine Learning techniques. The dataset used was gotten from kaggle and contains about 41 variables and over 230,000 records of previous loan applicants.  
-Most banks typically uses Logistic Regression Model to make decision whether an applicant is at risk of default or not. However, in this project, several other machine learning techniques were explored such as Tree-based models like Random Forest, and XGBoost (Extreme Gradient Boosting) as well as the Support Vector Machines (SVM) and the Logistic Regression Models were used. However, due to time and resources constraints, the models were not fully exploited to get the best out of each of the models. Simply, hyper-parameter tuning was not done on the models that have tunable parameters.
+This project aims to develop a machine learning model to predict the default of auto-loans using Machine Learning techniques. The dataset used was gotten from kaggle and contains about 41 variables and over 230,000 records of previous loan applicants.  
+Most banks typically use Logistic Regression Model to make decision whether an applicant is at risk of default or not. However, in this project, several other machine learning techniques were explored such as Tree-based models like Random Forest, and XGBoost (Extreme Gradient Boosting) as well as Artificial Neural Networks. The Logistic Regression Models was developed as well and compared to these other models. We found that the logistic regression model does not perform poorly compared to other models, but instead provided competitive performance as well. However, due to time and resources constraints, the models were not fully exploited to get the best out of each of the models. Simply, hyper-parameter tuning was not done on the models that have tunable parameters, and feature engineering was not done. 
 
 <center> <h2> 1. INTRODUCTION </h2> </center> 
 <h3> 1.1 Research Problem </h3>  
-The problem that this project aims to solve is to develop a machine learning model that will predict whether a potential borrower will default on their loan or not. 
+The problem that this project aims to solve is to develop a machine learning model that will predict whether a potential borrower will default on their loan or not.  
 The auto-loan industry is a multi-billion dollar industry that affects almost all aspects of life in the developed world. Automobiles are now the de facto means of movement in suburbs and even in some major cities and the volume of automobiles on the roads has increased tremendously over the past decades. Buying an automobile also referred to in this project as vehicle is an important decision for most people and banks are usually at the center of this decision since majority of vehicle purchases are made through financing option. Hence, financial institutions like banks have to face this particular problem all the time to decide whether a borrower will be able to make payments throughout the lifetime of the loan.  
 Banks do not want to issue loans to individuals that would default and at the same time do not want to deny loans for individuals that would not default. To do this, they want to be able to predict to a high level of confidence whether to approve or deny an auto-loan so that they will be able to minimize losses and writeoffs when a borrower is not able to make payments and at the same time make profits from customers who are able to service their loans. This project aims to develop a model using machine learning techniques to help banks decide which potential borrower is likely to default on their loans or not.  
 </br>
@@ -71,7 +71,7 @@ Logistic Regressions must not necessarily be binary as there are possible situat
 The logistic regression model relates the probability that a response variable would be successful to the predictors $x_{1, i}, x_{2, i}, ..., x_{k, i}$ through a framework like that of multiple regression:  
 $logit(p_{i}) = log_{e}(\frac{p_{i}}{1-p_{i}}) = \beta_{0} + \beta_{1}x_{1,i} + \beta_{2}x_{2,i} + ... + \beta_{k}x_{k,i}$
 
-<center> <b>Assumptions for Logistic Regression</b> </center>  
+<b>Assumptions for Logistic Regression</b>  
 <li> Each outcome of the response variable is independent of the other outcomes. </li> 
 <li> The response variable must follow a binomial distribution. </li> 
 <li> Each predictor $x_{i}$ is linearly related to the $logit(p_{i})$ if other predictors are held constant. </li>  
@@ -931,24 +931,40 @@ nnet_model_metrics
 results = rbind(logistic_model_metrics, rf_model_metrics, xgb_model_metrics, nnet_model_metrics)
 kable(results, "html") %>%
                         kable_paper("hover", full_width = F) %>%
-                        scroll_box(width = "700px", height = "300px")
+                        scroll_box(width = "500px", height = "200px")
 ```
-<h3> 5.4 Limitations of the model and data </h3>
-```{r}
+  
 
-```
+As we can see from the results of the different models. The models perform differently across the different metrics (Accuracy, Precision, Recall, AUC). It is important to know that the metric to be used to select the chosen model is dependent on the goal of the analysis/model.  
+In this case of vehicle loan default prediction, the main goal is to identify applicants that will default on their loans. Also, kindly note that the positive class in this analysis is the zero (0 - No default) while the negative class is the 1 (Loan Default).  
+Since the main concern is to correctly identifying defaults to minimize financial risk, the `Recall` is considered to be more critical. High recall ensures capturing most defaults, even at the cost of some false alarms.   
+Recall measures the proportion of actual defaults that are correctly predicted by the model. It focuses on the model's ability to capture all positive instances. High recall means a low false negative rate, which is crucial when identifying all actual defaults is important, even if it means higher false positives.  
+On the other hand, the precision measures the proportion of correctly predicted defaults out of all instances predicted as defaults. It specifically focuses on the accuracy of positive predictions, but here the focus is mainly on negative predictions which are default to minimize financial losses on vehicle loans. High precision means a low false positive rate, which is valuable when correctly identifying defaults is crucial and minimizing false alarms is a priority.  
+Also, Accuracy measures the overall correctness of predictions by considering the ratio of correctly predicted instances (both defaults and non-defaults) to the total instances. While accuracy is an intuitive metric, its reliability can be affected by class imbalance which is usually the case for most loan-default problems as there are usually fewer defaults than non-defaults.  
+Lastly, AUC quantifies the model's ability to distinguish between classes. It represents the area under the Receiver Operating Characteristic (ROC) curve, which plots the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. It is a valuable metric for assessing the overall performance of a classification model, including its ability to discriminate between default and non-default instances in a loan default prediction problem. It provides a comprehensive evaluation of the model's discriminatory power, especially in scenarios with class imbalance.  
 
+Looking at the results of the model, we find that that all of the models are competitive in terms of recall and they all performed badly on the precision and about average for the accuracy for the most part. Also, the AUC values are above average for the most part and I strongly believe that the overall metrics of these models can be improved by having more quality data, feature selection, and hyper-parameter tuning.
+
+
+<h3> 5.4 Limitations of the model and data </h3>  
+One major limitation of the model is the data source. The data was obtained from Kaggle, which is an open database source, which may question the reliability of the data for real world use. There are some features like credit score classification which may not be available for young applicants or immigrants to the country who have not built an history to be classified as low risk. More quality data is required to get a better performing model.  
+Also, most of the models have tune-able parameters to obtain better performing models, but the models trained in this analysis did not include hyper-parameter tuning and at such, the best models might not have been obtained for each of the model categories. This tuning process was avoided here because some of the models like Neural Network, and the Tree-Based models can become quickly complex and may require more computational capacity to perform several cross-validation/grid search and tuning process. For example, for the Random Forest model, a mere 500 trees was randomly selected without knowing if that number of trees is enough to grow the Forest as well as other parameters. Also, the number of rounds for the Xtreme Gradient Boosting was randomly selected without finding the best values for the combination of tunable parameters to get the best model. Furthermore, for the Neural Network model, we do not know what depth of network or number of nodes to train the model on to get the best performing model.  
+Furthermore, proper feature selection was not done to see if certain features can be dropped or to know what features of the data offer the most predictive value. 
 
 <h3> 5.5 Next Steps </h3>  
+One of the most important next steps is to try to obtain better quality and reputable data possibly from a reputable financial institution. This might be very difficult to obtain considering the fact that financial data are highly regulated and also companies consider these data as part of their intellectual property and may not be willing to give these out. If these are done as part of an internal modeling process, better quality data may be obtained to be used in training a loan default model.  
 
+In addition, it is very important to conduct hyper-parameter tuning for the models to determine what parameters would be best suited to train the model on. It is also important to know that as more data is included, the computational resources needed to conduct extensive hyper-parameter tuning on large data for complex models like Neural Network, and Tree-Based model would increase significantly.  
+
+Furthermore, we can also try to do feature selection, check for multi-correlation using the Variance Inflation Factor (VIF) method/approach to obtain only relevant features that provide predictive value.  
 
 </br>
 
 ***
 
-<center> <h2> 6. CONCLUSION </h2> </center> 
-
-
+<center> <h2> 6. CONCLUSION </h2> </center>  
+The purpose of this project was to develop a machine learning model for loan default prediction used in the automotive credit industry to minimize financial losses to financial institutions due to loan default. That is to say that banks are very much interested in identifying customers that are more likely to default on their auto loans and avoid extending credit to those customers. From the various literature reviews, we see that the industry standard for credit risk modeling/loan default prediction is currently the Logistic Regression. Throughout this study, machine learning algorithms such as Logistic regression, Random Forest, Extreme Gradient Boosting Machines and Neural Network have been examined and the findings is that the non-conventional tree-based models and the Neural Network performance over the industry standard is marginal. The Industry standard of logistic regression is good enough and perform well compared to the other models but not necessarily better that other. However, since the Random Forest, XGBoost, and Neural Networks are very difficult to interpret, it may be difficult for banks to understand why a customer is rejected for their loan application. While on the other hand, the Logistic Regression model is relatively more easier to interpret than its counterparts, it might be difficult to sway loan officers/decision makers away from the logistic regression without extracting way better performance from the other models since the Logistic Regression performance is not too far from the others.  
+Hence, I will still recommend the industry standard Logistic Regression model because of its simplicity, easier to understand and interpret, take less time to train and predict the results, and also provides competitive performance when compared to the other more complex models. Even though I recommend the Logistic Regression, I do not shut the doors on other models because as we continue to obtain more information about the behavior of customers in this increasingly digital world, the dimension of each observation might continue to increase and the Logistic Regression might suffer from getting predictive ability on highly dimensional data, the other models like Neural Network might and Tree-based models might come in handy.  
 </br>  
 
 ***
@@ -1000,9 +1016,13 @@ U.S. vehicle fleet 1990-2021 | Statista. (2023, August 24). Statista. https://ww
 U.S.: average selling price of new vehicles 2022 | Statista. (2023, June 7). Statista. https://www.statista.com/statistics/274927/new-vehicle-average-selling-price-in-the-united-states/  
 
 Witkowski, R. (2023, June 2). For People Under 30, Car Loan Delinquencies Hit A 15-Year High. Is The Economy Running Out Of Gas? Forbes Advisor. https://www.forbes.com/advisor/auto-loans/car-loan-late-payments/  
+</br>
 
+***
+<center> <h2> 8. APPENDIX </h2> </center> 
+This section contains all codes used in the analysis in the correct order. However, no output is generated.  
+```{r}
 
-
-
+```
 
 
